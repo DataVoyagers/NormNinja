@@ -1,0 +1,100 @@
+<?php
+
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\LearningMaterialController;
+use App\Http\Controllers\QuizController;
+use App\Http\Controllers\QuizQuestionController;
+use App\Http\Controllers\GameController;
+use App\Http\Controllers\ForumController;
+use Illuminate\Support\Facades\Route;
+
+// Public routes
+Route::get('/', function () {
+    if (auth()->check()) {
+        $user = auth()->user();
+        return match($user->role) {
+            'admin' => redirect('/admin/dashboard'),
+            'teacher' => redirect('/teacher/dashboard'),
+            'student' => redirect('/student/dashboard'),
+            default => redirect('/login'),
+        };
+    }
+    return redirect('/login');
+});
+
+// Authentication routes
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Protected routes
+Route::middleware('auth')->group(function () {
+    
+    // Admin routes
+    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        
+        // Student management
+        Route::get('/students', [AdminController::class, 'students'])->name('students');
+        Route::get('/students/create', [AdminController::class, 'createStudent'])->name('students.create');
+        Route::post('/students', [AdminController::class, 'storeStudent'])->name('students.store');
+        Route::get('/students/{student}/edit', [AdminController::class, 'editStudent'])->name('students.edit');
+        Route::put('/students/{student}', [AdminController::class, 'updateStudent'])->name('students.update');
+        Route::delete('/students/{student}', [AdminController::class, 'deleteStudent'])->name('students.delete');
+        
+        // Teacher management
+        Route::get('/teachers', [AdminController::class, 'teachers'])->name('teachers');
+        Route::get('/teachers/create', [AdminController::class, 'createTeacher'])->name('teachers.create');
+        Route::post('/teachers', [AdminController::class, 'storeTeacher'])->name('teachers.store');
+        Route::get('/teachers/{teacher}/edit', [AdminController::class, 'editTeacher'])->name('teachers.edit');
+        Route::put('/teachers/{teacher}', [AdminController::class, 'updateTeacher'])->name('teachers.update');
+        Route::delete('/teachers/{teacher}', [AdminController::class, 'deleteTeacher'])->name('teachers.delete');
+    });
+
+    // Teacher routes
+    Route::middleware('role:teacher')->prefix('teacher')->name('teacher.')->group(function () {
+        Route::get('/dashboard', [TeacherController::class, 'dashboard'])->name('dashboard');
+        Route::get('/student-performance', [TeacherController::class, 'studentPerformance'])->name('student-performance');
+        Route::get('/students/{student}', [TeacherController::class, 'studentDetail'])->name('student.detail');
+    });
+
+    // Student routes
+    Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
+        Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
+    });
+
+    // Learning Materials (accessible by teachers and students)
+    Route::resource('learning-materials', LearningMaterialController::class);
+
+    // Quizzes
+    Route::resource('quizzes', QuizController::class);
+    Route::get('quizzes/{quiz}/start', [QuizController::class, 'start'])->name('quizzes.start');
+    Route::get('quizzes/{quiz}/take/{attempt}', [QuizController::class, 'take'])->name('quizzes.take');
+    Route::post('quizzes/{quiz}/submit/{attempt}', [QuizController::class, 'submit'])->name('quizzes.submit');
+    Route::get('quizzes/{quiz}/result/{attempt}', [QuizController::class, 'result'])->name('quizzes.result');
+    
+    // Quiz Questions
+    Route::prefix('quizzes/{quiz}/questions')->name('quizzes.questions.')->group(function () {
+        Route::get('/', [QuizQuestionController::class, 'index'])->name('index');
+        Route::get('/create', [QuizQuestionController::class, 'create'])->name('create');
+        Route::post('/', [QuizQuestionController::class, 'store'])->name('store');
+        Route::get('/{question}/edit', [QuizQuestionController::class, 'edit'])->name('edit');
+        Route::put('/{question}', [QuizQuestionController::class, 'update'])->name('update');
+        Route::delete('/{question}', [QuizQuestionController::class, 'destroy'])->name('destroy');
+    });
+
+    // Games
+    Route::resource('games', GameController::class);
+    Route::get('games/{game}/play', [GameController::class, 'play'])->name('games.play');
+    Route::post('games/{game}/save-attempt', [GameController::class, 'saveAttempt'])->name('games.save-attempt');
+
+    // Forums
+    Route::resource('forums', ForumController::class);
+    Route::post('forums/{forum}/posts', [ForumController::class, 'storePost'])->name('forums.posts.store');
+    Route::delete('forums/{forum}/posts/{post}', [ForumController::class, 'deletePost'])->name('forums.posts.delete');
+});
