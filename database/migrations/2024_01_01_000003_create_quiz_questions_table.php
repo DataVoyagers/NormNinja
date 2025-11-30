@@ -9,11 +9,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('quiz_questions', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('quiz_id')->constrained()->onDelete('cascade');
             $table->enum('question_type', ['multiple_choice', 'true_false', 'short_answer']);
             $table->text('question_text');
-            $table->json('options')->nullable(); // For multiple choice options
+            $table->json('options')->nullable();
             $table->text('correct_answer');
             $table->integer('points')->default(1);
             $table->integer('order')->default(0);
