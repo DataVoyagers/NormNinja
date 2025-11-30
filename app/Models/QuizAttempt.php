@@ -51,6 +51,10 @@ class QuizAttempt extends Model
 
     public function getPassedAttribute()
     {
+        if (!$this->quiz) {
+            return false; // or null, or anything safe
+        }
+        
         return $this->percentage >= $this->quiz->passing_score;
     }
 }
