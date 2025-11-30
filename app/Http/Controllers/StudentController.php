@@ -6,6 +6,8 @@ use App\Models\LearningMaterial;
 use App\Models\Quiz;
 use App\Models\Game;
 use App\Models\Forum;
+use App\Models\CalendarEvent;
+use App\Models\Reminder;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
@@ -18,6 +20,51 @@ class StudentController extends Controller
             }
             return $next($request);
         });
+    }
+
+    public function calendarStore(Request $request)
+    {
+        CalendarEvent::create([
+            'user_id' => auth()->id(),
+            'title' => $request->title,
+            'date' => $request->date,
+            
+        ]);
+        return back();
+    }
+
+    public function calendarUpdate(Request $request, CalendarEvent $event)
+    {
+        $event->update($request->only(['title', 'date']));
+        return back();
+    }
+
+    public function calendarDelete(CalendarEvent $event)
+    {
+        $event->delete();
+        return back();
+    }
+
+    public function reminderStore(Request $request)
+    {
+        Reminder::create([
+            'user_id' => auth()->id(),
+            'text' => $request->text,
+            'date' => $request->date,
+        ]);
+        return back();
+    }
+
+    public function reminderUpdate(Request $request, Reminder $reminder)
+    {
+        $reminder->update($request->only(['text', 'date']));
+        return back();
+    }
+
+    public function reminderDelete(Reminder $reminder)
+    {
+        $reminder->delete();
+        return back();
     }
 
     public function dashboard()
@@ -61,12 +108,16 @@ class StudentController extends Controller
             'games_played' => $student->gameAttempts()->count(),
             'materials_available' => LearningMaterial::where('is_published', true)->count(),
             'active_forums' => Forum::where('is_active', true)->count(),
+            'calendarEvents' => CalendarEvent::where('user_id', $student->id)->get(),
+            'reminders' => Reminder::where('user_id', $student->id)->get(),
         ];
 
         // Available content
         $availableMaterials = LearningMaterial::where('is_published', true)->latest()->take(5)->get();
         $availableQuizzes = Quiz::where('is_published', true)->latest()->take(5)->get();
         $availableGames = Game::where('is_published', true)->latest()->take(5)->get();
+        $calendarEvents = CalendarEvent::where('user_id', $student->id)->get();
+        $reminders = Reminder::where('user_id', $student->id)->get();
 
         return view('student.dashboard', compact(
             'stats',
@@ -74,7 +125,9 @@ class StudentController extends Controller
             'recentGameAttempts',
             'availableMaterials',
             'availableQuizzes',
-            'availableGames'
+            'availableGames',
+            'calendarEvents',
+            'reminders'
         ));
     }
 }

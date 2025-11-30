@@ -6,6 +6,7 @@ use App\Models\Quiz;
 use App\Models\QuizQuestion;
 use App\Models\QuizAttempt;
 use Illuminate\Http\Request;
+use App\Models\Reminder;
 
 class QuizController extends Controller
 {
@@ -91,7 +92,16 @@ class QuizController extends Controller
             'available_until' => 'nullable|date|after:available_from',
         ]);
 
+        // Check if quiz is being published for the first time
+        $wasUnpublished = !$quiz->is_published;
+        $willBePublished = $request->boolean('is_published');
+
         $quiz->update($request->all());
+
+        // Notify students if quiz is being published for the first time
+        if ($wasUnpublished && $willBePublished) {
+            $this->notifyStudentsAboutNewContent('quiz', $quiz);
+        }
 
         return redirect()->route('quizzes.index')->with('success', 'Quiz updated successfully.');
     }
@@ -116,6 +126,12 @@ class QuizController extends Controller
             'student_id' => auth()->id(),
             'answers' => [],
             'started_at' => now(),
+        ]);
+
+        Reminder::create([
+            'user_id' => auth()->id(),
+            'text' => 'Complete Quiz: ' . $quiz->title . ' - Don\'t forget to complete this quiz!',
+            'is_completed' => false,
         ]);
 
         return redirect()->route('quizzes.take', ['quiz' => $quiz, 'attempt' => $attempt]);
