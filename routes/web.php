@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CalendarEventController;
+use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TeacherController;
@@ -66,6 +68,33 @@ Route::middleware('auth')->group(function () {
     // Student routes
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
         Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
+        
+        Route::get('/calendar', [StudentController::class, 'calendarIndex'])->name('calendar.index');
+        Route::post('/calendar/store', [StudentController::class, 'calendarStore'])->name('calendar.store');
+        Route::put('/calendar/{event}', [StudentController::class, 'calendarUpdate'])->name('calendar.update');
+        Route::delete('/calendar/{event}', [StudentController::class, 'calendarDelete'])->name('calendar.delete');
+
+        Route::post('/reminders/store', [StudentController::class, 'reminderStore'])->name('reminders.store');
+        Route::put('/reminders/{reminder}', [StudentController::class, 'reminderUpdate'])->name('reminders.update');
+        Route::delete('/reminders/{reminder}', [StudentController::class, 'reminderDelete'])->name('reminders.delete');
+
+    });
+
+    // Calendar Events
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/calendar-events', [CalendarEventController::class, 'index']);
+        Route::post('/calendar-events', [CalendarEventController::class, 'store']);
+        Route::put('/calendar-events/{event}', [CalendarEventController::class, 'update']);
+        Route::delete('/calendar-events/{event}', [CalendarEventController::class, 'destroy']);
+});
+
+    // Reminders
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/reminders', [ReminderController::class, 'index']);
+        Route::post('/reminders', [ReminderController::class, 'store']);
+        Route::put('/reminders/{reminder}', [ReminderController::class, 'update']);
+        Route::patch('/reminders/{reminder}/toggle', [ReminderController::class, 'toggle']);
+        Route::delete('/reminders/{reminder}', [ReminderController::class, 'destroy']);
     });
 
     // Learning Materials (accessible by teachers and students)
@@ -88,13 +117,35 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{question}', [QuizQuestionController::class, 'destroy'])->name('destroy');
     });
 
+    Route::middleware(['auth', 'role:teacher'])->group(function () {
+        Route::resource('games', GameController::class)->except(['show', 'index']);
+        Route::get('games/{game}/statistics', [GameController::class, 'statistics'])->name('games.statistics');
+});
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('games', [GameController::class, 'index'])->name('games.index');
+        Route::get('games/{game}', [GameController::class, 'show'])->name('games.show');
+        Route::get('games/{game}/play', [GameController::class, 'play'])->name('games.play');
+        Route::post('games/{game}/submit', [GameController::class, 'submitAttempt'])->name('games.submit');
+        Route::get('game-attempts/{attempt}/results', [GameController::class, 'results'])->name('games.results');
+});
+
     // Games
     Route::resource('games', GameController::class);
     Route::get('games/{game}/play', [GameController::class, 'play'])->name('games.play');
     Route::post('games/{game}/save-attempt', [GameController::class, 'saveAttempt'])->name('games.save-attempt');
 
     // Forums
+    Route::get('forums', [ForumController::class, 'index'])->name('forums.index');
+    Route::get('forums/create', [ForumController::class, 'create'])->name('forums.create');
+    Route::post('forums', [ForumController::class, 'store'])->name('forums.store');
+    Route::get('forums/{forum}', [ForumController::class, 'show'])->name('forums.show');
+    Route::get('forums/{forum}/edit', [ForumController::class, 'edit'])->name('forums.edit');
+    Route::put('forums/{forum}', [ForumController::class, 'update'])->name('forums.update');
+    Route::delete('forums/{forum}', [ForumController::class, 'destroy'])->name('forums.destroy');
+
     Route::resource('forums', ForumController::class);
     Route::post('forums/{forum}/posts', [ForumController::class, 'storePost'])->name('forums.posts.store');
-    Route::delete('forums/{forum}/posts/{post}', [ForumController::class, 'deletePost'])->name('forums.posts.delete');
+    Route::put('forums/{forum}/posts/{post}', [ForumController::class, 'updatePost'])->name('forums.posts.update'); // ADD THIS LINE
+    Route::delete('forums/{forum}/posts/{post}', [ForumController::class, 'deletePost'])->name('forums.posts.destroy');
 });
