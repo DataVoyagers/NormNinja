@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -66,7 +67,7 @@ class AdminController extends Controller
             'is_active' => true,
         ]);
 
-        return redirect()->route('admin.students')->with('success', 'Student created successfully.');
+        return redirect()->route('admin.students.index')->with('success', 'Student created successfully.');
     }
 
     public function editStudent(User $student)
@@ -97,7 +98,7 @@ class AdminController extends Controller
             $student->update(['password' => Hash::make($request->password)]);
         }
 
-        return redirect()->route('admin.students')->with('success', 'Student updated successfully.');
+        return redirect()->route('admin.students.index')->with('success', 'Student updated successfully.');
     }
 
     public function deleteStudent(User $student)
@@ -106,7 +107,7 @@ class AdminController extends Controller
             abort(404);
         }
         $student->delete();
-        return redirect()->route('admin.students')->with('success', 'Student deleted successfully.');
+        return redirect()->route('admin.students.index')->with('success', 'Student deleted successfully.');
     }
 
     // Teacher Management
@@ -126,22 +127,31 @@ class AdminController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:8|confirmed',
+            'teacher_id' => 'required|string|unique:users',
             'phone' => 'nullable|string',
-            'address' => 'nullable|string',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_active' => 'required|boolean',
         ]);
 
-        User::create([
+        $data = [
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'teacher',
+            'teacher_id' => $request->teacher_id,
             'phone' => $request->phone,
-            'address' => $request->address,
-            'is_active' => true,
-        ]);
+            'is_active' => $request->is_active ?? true,
+        ];
 
-        return redirect()->route('admin.teachers')->with('success', 'Teacher created successfully.');
+        // Handle profile picture upload
+        if ($request->hasFile('profile_picture')) {
+            $data['profile_picture'] = $request->file('profile_picture')->store('profile_pictures', 'public');
+        }
+
+        User::create($data);
+
+        return redirect()->route('admin.teachers.index')->with('success', 'Teacher created successfully.');
     }
 
     public function editTeacher(User $teacher)
@@ -157,20 +167,34 @@ class AdminController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $teacher->id,
+            'teacher_id' => 'required|string|unique:users,teacher_id,' . $teacher->id,
             'phone' => 'nullable|string',
-            'address' => 'nullable|string',
+            'password' => 'nullable|string|min:8|confirmed',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'boolean',
         ]);
 
-        $teacher->update($request->only([
-            'name', 'email', 'phone', 'address', 'is_active'
-        ]));
+        $data = $request->only([
+            'name', 'email', 'teacher_id', 'phone', 'is_active'
+        ]);
 
+        // Handle profile picture upload
+        if ($request->hasFile('profile_picture')) {
+            // Delete old profile picture if exists
+            if ($teacher->profile_picture) {
+                Storage::disk('public')->delete($teacher->profile_picture);
+            }
+            $data['profile_picture'] = $request->file('profile_picture')->store('profile_pictures', 'public');
+        }
+
+        $teacher->update($data);
+
+        // Update password if provided
         if ($request->filled('password')) {
             $teacher->update(['password' => Hash::make($request->password)]);
         }
 
-        return redirect()->route('admin.teachers')->with('success', 'Teacher updated successfully.');
+        return redirect()->route('admin.teachers.index')->with('success', 'Teacher updated successfully.');
     }
 
     public function deleteTeacher(User $teacher)
@@ -178,7 +202,13 @@ class AdminController extends Controller
         if ($teacher->role !== 'teacher') {
             abort(404);
         }
+        
+        // Delete profile picture if exists
+        if ($teacher->profile_picture) {
+            Storage::disk('public')->delete($teacher->profile_picture);
+        }
+        
         $teacher->delete();
-        return redirect()->route('admin.teachers')->with('success', 'Teacher deleted successfully.');
+        return redirect()->route('admin.teachers.index')->with('success', 'Teacher deleted successfully.');
     }
 }
