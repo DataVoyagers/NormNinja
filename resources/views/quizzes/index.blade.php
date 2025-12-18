@@ -3,32 +3,52 @@
 @section('title', 'Quizzes')
 
 @section('content')
-<div class="space-y-6">
+<div class="container mx-auto px-4 py-8">
     <!-- Header -->
-    <div class="flex justify-between items-center">
+    <div class="flex justify-between items-center mb-8">
         <div>
             <h1 class="text-3xl font-bold text-gray-800">Quizzes</h1>
             <p class="text-gray-600 mt-2">
                 @if(auth()->user()->isTeacher())
-                    Manage your quizzes and track student performance
+                    Create and manage quizzes for your students
                 @else
-                    Take quizzes and test your knowledge
+                    Take quizzes to test your knowledge
                 @endif
             </p>
         </div>
         @if(auth()->user()->isTeacher())
-        <a href="{{ route('quizzes.create') }}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-200">
+        <a href="{{ route('quizzes.create') }}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition duration-200">
             <i class="fas fa-plus mr-2"></i>Create Quiz
         </a>
         @endif
     </div>
 
+    <!-- Success Message -->
+    @if(session('success'))
+    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <p>{{ session('success') }}</p>
+        </div>
+    </div>
+    @endif
+
     <!-- Quizzes Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($quizzes as $quiz)
-        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition duration-200 overflow-hidden">
+        <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition duration-300 overflow-hidden">
             <!-- Quiz Header -->
             <div class="bg-gradient-to-r from-green-500 to-teal-600 p-4 text-white">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-semibold uppercase tracking-wide">
+                        <i class="fas fa-clipboard-list mr-1"></i>Quiz
+                    </span>
+                    @if(!$quiz->is_published)
+                    <span class="bg-yellow-400 text-yellow-900 px-2 py-1 rounded text-xs font-semibold">
+                        Draft
+                    </span>
+                    @endif
+                </div>
                 <h3 class="font-bold text-lg">{{ $quiz->title }}</h3>
                 @if($quiz->subject)
                 <p class="text-sm text-green-100 mt-1">
@@ -41,93 +61,84 @@
             <div class="p-4">
                 <!-- Description -->
                 @if($quiz->description)
-                <p class="text-gray-600 text-sm mb-4">{{ Str::limit($quiz->description, 100) }}</p>
+                <p class="text-gray-600 mb-4 text-sm line-clamp-2">{{ $quiz->description }}</p>
                 @endif
 
                 <!-- Quiz Info -->
-                <div class="space-y-2 mb-4">
-                    <div class="flex items-center text-sm text-gray-600">
-                        <i class="fas fa-question-circle w-5"></i>
-                        <span>{{ $quiz->questions->count() }} Questions</span>
+                <div class="grid grid-cols-2 gap-3 mb-4 text-sm">
+                    <div class="bg-gray-50 rounded p-2">
+                        <p class="text-gray-500 text-xs">Questions</p>
+                        <p class="font-semibold text-gray-800">{{ $quiz->questions()->count() }}</p>
+                    </div>
+                    <div class="bg-gray-50 rounded p-2">
+                        <p class="text-gray-500 text-xs">Points</p>
+                        <p class="font-semibold text-gray-800">{{ $quiz->total_points }}</p>
                     </div>
                     @if($quiz->duration_minutes)
-                    <div class="flex items-center text-sm text-gray-600">
-                        <i class="fas fa-clock w-5"></i>
-                        <span>{{ $quiz->duration_minutes }} Minutes</span>
+                    <div class="bg-gray-50 rounded p-2">
+                        <p class="text-gray-500 text-xs">Duration</p>
+                        <p class="font-semibold text-gray-800">{{ $quiz->duration_minutes }} min</p>
                     </div>
                     @endif
-                    <div class="flex items-center text-sm text-gray-600">
-                        <i class="fas fa-star w-5"></i>
-                        <span>Passing Score: {{ $quiz->passing_score }}%</span>
-                    </div>
-                    <div class="flex items-center text-sm text-gray-600">
-                        <i class="fas fa-trophy w-5"></i>
-                        <span>Total Points: {{ $quiz->total_points }}</span>
+                    <div class="bg-gray-50 rounded p-2">
+                        <p class="text-gray-500 text-xs">Passing Score</p>
+                        <p class="font-semibold text-gray-800">{{ $quiz->passing_score }}%</p>
                     </div>
                 </div>
 
-                <!-- Status Badge -->
-                @if($quiz->is_published)
-                    <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 mb-4">
-                        <i class="fas fa-check-circle mr-1"></i>Published
-                    </span>
-                @else
-                    <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 mb-4">
-                        <i class="fas fa-clock mr-1"></i>Draft
-                    </span>
-                @endif
+                <!-- Teacher Info -->
+                <div class="border-t pt-3 mb-3 text-xs text-gray-500">
+                    <p><i class="fas fa-user mr-1"></i>{{ $quiz->teacher->name }}</p>
+                </div>
 
-                <!-- Student: Attempts Info -->
+                <!-- Student's Best Score -->
                 @if(auth()->user()->isStudent())
                     @php
-                        $userAttempts = $quiz->attempts()->where('student_id', auth()->id())->get();
-                        $bestAttempt = $userAttempts->sortByDesc('percentage')->first();
+                        $bestAttempt = $quiz->attempts()
+                            ->where('student_id', auth()->id())
+                            ->where('is_completed', true)
+                            ->orderBy('score', 'desc')
+                            ->first();
                     @endphp
-                    @if($userAttempts->count() > 0)
-                    <div class="bg-blue-50 border border-blue-200 rounded p-2 mb-4">
-                        <div class="text-xs text-blue-800 font-semibold">Your Best: {{ $bestAttempt->percentage }}%</div>
-                        <div class="text-xs text-blue-600">Attempts: {{ $userAttempts->count() }}</div>
+                    @if($bestAttempt)
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-2 mb-3">
+                        <p class="text-xs text-blue-700">Your Best Score</p>
+                        <p class="text-lg font-bold text-blue-800">{{ $bestAttempt->percentage }}%</p>
                     </div>
                     @endif
                 @endif
 
-                <!-- Teacher: Attempt Stats -->
-                @if(auth()->user()->isTeacher())
-                <div class="bg-gray-50 border border-gray-200 rounded p-2 mb-4">
-                    <div class="text-xs text-gray-600">
-                        <i class="fas fa-users mr-1"></i>{{ $quiz->attempts()->distinct('student_id')->count() }} students attempted
-                    </div>
-                    <div class="text-xs text-gray-600">
-                        <i class="fas fa-clipboard-check mr-1"></i>{{ $quiz->attempts()->where('is_completed', true)->count() }} completed
-                    </div>
+                <!-- Action Buttons -->
+                <div class="flex gap-2">
+                    @if(auth()->user()->isTeacher())
+                        <a href="{{ route('quizzes.questions.index', $quiz) }}" 
+                           class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm font-semibold transition duration-200">
+                            <i class="fas fa-list mr-1"></i>Questions
+                        </a>
+                        <a href="{{ route('quizzes.edit', $quiz) }}" 
+                           class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded text-sm font-semibold transition duration-200">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form action="{{ route('quizzes.destroy', $quiz) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this quiz?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-semibold transition duration-200">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('quizzes.show', $quiz) }}" 
+                           class="flex-1 text-center text-blue-600 hover:text-blue-800 px-3 py-2 rounded text-sm font-semibold border border-blue-600 hover:bg-blue-50 transition duration-200">
+                            <i class="fas fa-info-circle mr-1"></i>Details
+                        </a>
+                        @if($quiz->is_published)
+                        <a href="{{ route('quizzes.start', $quiz) }}" 
+                           class="flex-1 text-center bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-semibold transition duration-200">
+                            <i class="fas fa-play mr-1"></i>Take Quiz
+                        </a>
+                        @endif
+                    @endif
                 </div>
-                @endif
-            </div>
-
-            <!-- Quiz Footer -->
-            <div class="bg-gray-50 px-4 py-3 border-t flex items-center justify-between">
-                @if(auth()->user()->isTeacher())
-                <div class="space-x-2">
-                    <a href="{{ route('quizzes.show', $quiz) }}" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">
-                        <i class="fas fa-eye"></i> View
-                    </a>
-                    <a href="{{ route('quizzes.edit', $quiz) }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-semibold">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
-                </div>
-                <a href="{{ route('quizzes.questions.index', $quiz) }}" class="text-green-600 hover:text-green-800 text-sm font-semibold">
-                    <i class="fas fa-list"></i> Questions
-                </a>
-                @else
-                <a href="{{ route('quizzes.show', $quiz) }}" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">
-                    <i class="fas fa-info-circle"></i> View Details
-                </a>
-                @if($quiz->is_published)
-                <a href="{{ route('quizzes.start', $quiz) }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-semibold transition duration-200">
-                    <i class="fas fa-play mr-1"></i>Take Quiz
-                </a>
-                @endif
-                @endif
             </div>
         </div>
         @empty
@@ -135,7 +146,7 @@
             <i class="fas fa-clipboard-list text-gray-300 text-6xl mb-4"></i>
             <p class="text-gray-500 text-lg">No quizzes available yet</p>
             @if(auth()->user()->isTeacher())
-            <a href="{{ route('quizzes.create') }}" class="text-indigo-600 hover:text-indigo-800 font-semibold mt-2 inline-block">
+            <a href="{{ route('quizzes.create') }}" class="text-green-600 hover:text-green-800 font-semibold mt-2 inline-block">
                 Create your first quiz
             </a>
             @endif
@@ -145,7 +156,7 @@
 
     <!-- Pagination -->
     @if($quizzes->hasPages())
-    <div class="flex justify-center">
+    <div class="flex justify-center mt-8">
         {{ $quizzes->links() }}
     </div>
     @endif
