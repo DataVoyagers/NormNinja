@@ -34,4 +34,25 @@ class Game extends Model
     {
         return $this->hasMany(GameAttempt::class);
     }
+
+    public function studentAttempts($studentId)
+    {
+        return $this->attempts()->where('student_id', $studentId);
+    }
+
+    public function averageScore()
+    {
+        return $this->attempts()
+            ->where('is_completed', true)
+            ->avg('score');
+    }
+
+    public function completionRate()
+    {
+        $total = $this->attempts()->count();
+        if ($total == 0) return 0;
+        
+        $completed = $this->attempts()->where('is_completed', true)->count();
+        return round(($completed / $total) * 100, 2);
+    }
 }
