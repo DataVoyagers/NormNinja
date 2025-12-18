@@ -48,9 +48,6 @@
                             Quiz Performance
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Assignment Status
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Status
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -96,22 +93,6 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">
-                                {{ $data['submitted_assignments'] }}/{{ $data['total_assignments'] }} submitted
-                            </div>
-                            @if($data['missing_assignments'] > 0)
-                                <div class="text-xs text-red-600 font-semibold mt-1">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    {{ $data['missing_assignments'] }} missing
-                                </div>
-                            @else
-                                <div class="text-xs text-green-600 font-semibold mt-1">
-                                    <i class="fas fa-check-circle"></i>
-                                    All submitted
-                                </div>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
                             @if($data['needs_support'])
                                 <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
                                     <i class="fas fa-hand-paper mr-1"></i>
@@ -132,13 +113,6 @@
                                 </span>
                             @endif
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="{{ route('teacher.student.detail', $data['student']->id) }}" 
-                               class="text-indigo-600 hover:text-indigo-900">
-                                <i class="fas fa-eye mr-1"></i>
-                                View Details
-                            </a>
-                        </td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -149,7 +123,8 @@
     <!-- Legend -->
     <div class="bg-white rounded-lg shadow-md p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Support Criteria</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <p class="text-sm text-gray-600 mb-4">Students are flagged as needing support based on one or more of the following criteria:</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="flex items-start">
                 <div class="flex-shrink-0">
                     <div class="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center">
@@ -163,13 +138,35 @@
             </div>
             <div class="flex items-start">
                 <div class="flex-shrink-0">
-                    <div class="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center">
-                        <i class="fas fa-file-alt text-red-600"></i>
+                    <div class="h-8 w-8 rounded-full bg-orange-100 flex items-center justify-center">
+                        <i class="fas fa-tasks text-orange-600"></i>
                     </div>
                 </div>
                 <div class="ml-3">
-                    <h4 class="text-sm font-semibold text-gray-900">Missing Assignments</h4>
-                    <p class="text-sm text-gray-600">One or more assignments not submitted</p>
+                    <h4 class="text-sm font-semibold text-gray-900">Low Completion Rate</h4>
+                    <p class="text-sm text-gray-600">Completed less than 50% of quizzes</p>
+                </div>
+            </div>
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <div class="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center">
+                        <i class="fas fa-user-clock text-yellow-600"></i>
+                    </div>
+                </div>
+                <div class="ml-3">
+                    <h4 class="text-sm font-semibold text-gray-900">No Engagement</h4>
+                    <p class="text-sm text-gray-600">Has not attempted any quizzes</p>
+                </div>
+            </div>
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <div class="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center">
+                        <i class="fas fa-arrow-down text-purple-600"></i>
+                    </div>
+                </div>
+                <div class="ml-3">
+                    <h4 class="text-sm font-semibold text-gray-900">Declining Performance</h4>
+                    <p class="text-sm text-gray-600">Recent scores lower than earlier attempts</p>
                 </div>
             </div>
         </div>
