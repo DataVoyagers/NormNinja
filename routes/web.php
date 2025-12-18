@@ -36,7 +36,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     
     // Admin routes
-    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
         
         // Student management
@@ -65,8 +65,36 @@ Route::middleware('auth')->group(function () {
 
     // Student routes
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
-        Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
-    });
+
+    Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
+    Route::prefix('student')->middleware(['auth','role:student'])->group(function () {
+    Route::post('/calendar/store', [StudentController::class, 'calendarStore'])->name('student.calendar.store');
+    Route::post('/calendar/update/{id}', [StudentController::class, 'calendarUpdate'])->name('student.calendar.update');
+    Route::post('/calendar/delete/{id}', [StudentController::class, 'calendarDelete'])->name('student.calendar.delete');
+
+     // Reminders (store, update, delete)
+    Route::post('/student/reminders', [ReminderController::class, 'store'])->name('student.reminders.store');
+    Route::put('/student/reminders/{reminder}', [ReminderController::class, 'update'])->name('reminders.update');
+    Route::delete('/student/reminders/{reminder}', [ReminderController::class, 'destroy'])->name('reminders.destroy');
+
+    // Calendar Events
+    Route::post('/events', [EventController::class, 'store'])->name('student.calendar.store');
+    Route::put('/events/{event}', [EventController::class, 'update']);
+});
+
+
+    // Calendar Events Routes
+    Route::get('/calendar', [StudentController::class, 'calendarIndex'])->name('calendar.index');
+    Route::post('/calendar/store', [StudentController::class, 'calendarStore'])->name('calendar.store');
+    Route::put('/calendar/{event}', [StudentController::class, 'calendarUpdate'])->name('calendar.update');
+    Route::delete('/calendar/{event}', [StudentController::class, 'calendarDelete'])->name('calendar.delete');
+
+    // Reminders Routes
+    Route::post('/reminders/store', [StudentController::class, 'reminderStore'])->name('reminders.store');
+    Route::put('/reminders/{reminder}', [StudentController::class, 'reminderUpdate'])->name('reminders.update');
+    Route::delete('/reminders/{reminder}', [StudentController::class, 'reminderDelete'])->name('reminders.delete');
+});
+
 
     // Learning Materials (accessible by teachers and students)
     Route::resource('learning-materials', LearningMaterialController::class);
