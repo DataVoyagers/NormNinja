@@ -77,11 +77,12 @@
             </div>
         </div>
     </div>
+    
 
     <!-- Quick Actions -->
     <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Quick Actions</h2>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             <a href="{{ route('learning-materials.create') }}" class="bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg p-4 text-center transition duration-200">
                 <i class="fas fa-upload text-2xl text-blue-600 mb-2"></i>
                 <p class="text-blue-800 font-semibold text-sm">Upload Material</p>
@@ -101,10 +102,6 @@
             <a href="{{ route('teacher.student-performance') }}" class="bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg p-4 text-center transition duration-200">
                 <i class="fas fa-chart-line text-2xl text-red-600 mb-2"></i>
                 <p class="text-red-800 font-semibold text-sm">Student Performance</p>
-            </a>
-            <a href="{{ route('learning-materials.index') }}" class="bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg p-4 text-center transition duration-200">
-                <i class="fas fa-list text-2xl text-indigo-600 mb-2"></i>
-                <p class="text-indigo-800 font-semibold text-sm">View All</p>
             </a>
         </div>
     </div>
@@ -150,7 +147,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $attempt->completed_at->format('M d, Y H:i') }}
+                                {{ $attempt->completed_at ? $attempt->completed_at->format('M d, Y H:i') : 'In Progress' }}
                             </td>
                         </tr>
                         @endforeach
