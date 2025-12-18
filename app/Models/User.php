@@ -97,4 +97,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(AssignmentSubmission::class, 'student_id');
     }
+
+    public function calendarEvents()
+    {
+        return $this->hasMany(CalendarEvent::class);
+    }
+
+    public function reminders()
+    {
+        return $this->hasMany(Reminder::class);
+    }
+    
 }
