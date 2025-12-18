@@ -57,7 +57,12 @@ class GameController extends Controller
             abort(403);
         }
 
-        return view('games.show', compact('game'));
+        $userAttempt = null;
+        if (auth()->user()->isStudent()) {
+            $userAttempt = $game->studentAttempts(auth()->id())->latest()->first();
+        }
+
+        return view('games.show', compact('game', 'userAttempt'));
     }
 
     public function edit(Game $game)
@@ -94,28 +99,74 @@ class GameController extends Controller
 
     public function play(Game $game)
     {
-        if (!$game->is_published) {
+        if (!$game->is_published && !auth()->user()->isTeacher()) {
             abort(403);
         }
 
-        return view('games.play', compact('game'));
+        // Create a new attempt for the student
+        if (auth()->user()->isStudent()) {
+            $attempt = GameAttempt::create([
+                'game_id' => $game->id,
+                'student_id' => auth()->id(),
+                'is_completed' => false,
+            ]);
+        }
+
+        return view('games.play', compact('game', 'attempt'));
     }
 
-    public function saveAttempt(Request $request, Game $game)
+    public function submitAttempt(Request $request, Game $game)
     {
         $request->validate([
+            'attempt_id' => 'required|exists:game_attempts,id',
             'score' => 'required|integer|min:0',
-            'time_spent_seconds' => 'required|integer|min:0',
+            'time_spent' => 'required|integer|min:0',
         ]);
 
-        GameAttempt::create([
-            'game_id' => $game->id,
-            'student_id' => auth()->id(),
-            'score' => $request->score,
-            'time_spent_seconds' => $request->time_spent_seconds,
-            'is_completed' => true,
-        ]);
+        $attempt = GameAttempt::findOrFail($request->attempt_id);
+        
+        if ($attempt->student_id !== auth()->id()) {
+            abort(403);
+        }
 
-        return response()->json(['message' => 'Game attempt saved successfully']);
+        $attempt->markAsCompleted($request->score, $request->time_spent);
+
+        return redirect()->route('games.results', $attempt)
+            ->with('success', 'Game completed successfully!');
+    }
+
+    public function results(GameAttempt $attempt)
+    {
+        if ($attempt->student_id !== auth()->id() && $attempt->game->teacher_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $game = $attempt->game;
+        $allAttempts = $game->studentAttempts($attempt->student_id)->latest()->get();
+
+        return view('games.results', compact('attempt', 'game', 'allAttempts'));
+    }
+
+    public function statistics(Game $game)
+    {
+        $this->authorize('update', $game);
+
+        $attempts = $game->attempts()
+            ->where('is_completed', true)
+            ->with('student')
+            ->latest()
+            ->paginate(20);
+
+        $stats = [
+            'total_attempts' => $game->attempts()->count(),
+            'completed_attempts' => $game->attempts()->where('is_completed', true)->count(),
+            'average_score' => $game->averageScore(),
+            'completion_rate' => $game->completionRate(),
+            'average_time' => $game->attempts()
+                ->where('is_completed', true)
+                ->avg('time_spent_seconds'),
+        ];
+
+        return view('games.statistics', compact('game', 'attempts', 'stats'));
     }
 }
