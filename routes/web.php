@@ -40,7 +40,8 @@ Route::middleware('auth')->group(function () {
     // Admin routes
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-        
+        Route::get('/profile', [AdminController::class, 'showProfile'])->name('profile');
+
         // Student management
         Route::get('/students', [AdminController::class, 'students'])->name('students.index');
         Route::get('/students/create', [AdminController::class, 'createStudent'])->name('students.create');
