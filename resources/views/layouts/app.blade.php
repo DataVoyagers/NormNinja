@@ -33,10 +33,10 @@
                         <a href="{{ route('admin.dashboard') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
                             <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
                         </a>
-                        <a href="{{ route('admin.students') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        <a href="{{ route('admin.students.index') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
                             <i class="fas fa-user-graduate mr-2"></i>Students
                         </a>
-                        <a href="{{ route('admin.teachers') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        <a href="{{ route('admin.teachers.index') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
                             <i class="fas fa-chalkboard-teacher mr-2"></i>Teachers
                         </a>
                     @elseif(auth()->user()->isTeacher())
@@ -71,27 +71,39 @@
                         <a href="{{ route('games.index') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
                             <i class="fas fa-gamepad mr-2"></i>Games
                         </a>
+                        <a href="{{ route('games.leaderboard') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                            <i class="fas fa-trophy mr-2"></i>Leaderboard
+                        </a>
                         <a href="{{ route('forums.index') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
                             <i class="fas fa-comments mr-2"></i>Forums
                         </a>
                     @endif
 
                     <!-- User Menu -->
-                    <div class="relative group">
-                        <button class="flex items-center space-x-2 hover:bg-indigo-700 px-3 py-2 rounded-md">
+                    <div class="relative">
+                        <button id="userMenuButton" type="button" class="flex items-center space-x-2 hover:bg-indigo-700 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-white">
                             <i class="fas fa-user-circle text-2xl"></i>
                             <span>{{ auth()->user()->name }}</span>
-                            <i class="fas fa-chevron-down text-xs"></i>
+                            <i id="dropdownArrow" class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
                         </button>
-                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden group-hover:block z-50">
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
                             <div class="py-1">
-                                <div class="px-4 py-2 text-sm text-gray-700 border-b">
+                                <div class="px-4 py-3 text-sm text-gray-700 border-b">
                                     <div class="font-semibold">{{ auth()->user()->name }}</div>
                                     <div class="text-xs text-gray-500">{{ ucfirst(auth()->user()->role) }}</div>
                                 </div>
+                                @if(auth()->user()->isStudent())
+                                    <a href="{{ route('student.profile') }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150">
+                                        <i class="fas fa-user mr-2"></i>My Profile
+                                    </a>
+                                @elseif(auth()->user()->isTeacher())
+                                    <a href="{{ route('teacher.profile') }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150">
+                                        <i class="fas fa-user mr-2"></i>My Profile
+                                    </a>
+                                @endif
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <button type="submit" class="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150 border-t">
                                         <i class="fas fa-sign-out-alt mr-2"></i>Logout
                                     </button>
                                 </form>
@@ -134,6 +146,44 @@
             </div>
         </div>
     </footer>
+
+    <!-- User Dropdown JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownButton = document.getElementById('userMenuButton');
+            const dropdownMenu = document.getElementById('userDropdown');
+            const dropdownArrow = document.getElementById('dropdownArrow');
+            
+            if (dropdownButton && dropdownMenu && dropdownArrow) {
+                // Toggle dropdown on button click
+                dropdownButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isHidden = dropdownMenu.classList.contains('hidden');
+                    
+                    if (isHidden) {
+                        dropdownMenu.classList.remove('hidden');
+                        dropdownArrow.style.transform = 'rotate(180deg)';
+                    } else {
+                        dropdownMenu.classList.add('hidden');
+                        dropdownArrow.style.transform = 'rotate(0deg)';
+                    }
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                        dropdownMenu.classList.add('hidden');
+                        dropdownArrow.style.transform = 'rotate(0deg)';
+                    }
+                });
+                
+                // Prevent dropdown from closing when clicking inside it
+                dropdownMenu.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+        });
+    </script>
 
     @stack('scripts')
 </body>

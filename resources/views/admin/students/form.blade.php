@@ -94,7 +94,7 @@
 
             <!-- Action Buttons -->
             <div class="flex items-center justify-between pt-4 border-t">
-                <a href="{{ route('admin.students') }}" class="text-gray-600 hover:text-gray-800 font-semibold">
+                <a href="{{ route('admin.students.index') }}" class="text-gray-600 hover:text-gray-800 font-semibold">
                     <i class="fas fa-arrow-left mr-2"></i>Cancel
                 </a>
                 <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold transition duration-200">

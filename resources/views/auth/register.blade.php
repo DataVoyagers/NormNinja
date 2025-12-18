@@ -42,7 +42,6 @@
                 <select id="role" name="role" required
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <option value="student" {{ old('role') == 'student' ? 'selected' : '' }}>Student</option>
-                    <option value="teacher" {{ old('role') == 'teacher' ? 'selected' : '' }}>Teacher</option>
                 </select>
             </div>
 
