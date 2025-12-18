@@ -2,16 +2,12 @@
 
 This package contains ready-to-use Blade template examples for the remaining views in your NormNinja LMS.
 
-## 📦 What's Included
-
 ### Admin Views
 - `admin/students/form.blade.php` - Student create/edit form (reusable)
 - Use this for both create.blade.php and edit.blade.php
 
 ### Quiz Views
 - `quizzes/index.blade.php` - Quiz listing with cards for both teachers and students
-
-## 🎯 How to Use These Templates
 
 ### 1. Copy to Your Project
 
@@ -145,9 +141,4 @@ After creating a view:
 - Laravel Blade Docs: https://laravel.com/docs/blade
 - Font Awesome Icons: https://fontawesome.com/icons
 
-
-Use these templates as a starting point and customize them to match your specific needs!
-
----
-
-**Created for NormNinja by Data Voyagers Team**
+**Created NormNinja by Data Voyagers Team**
