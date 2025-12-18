@@ -32,4 +32,23 @@ class GameAttempt extends Model
     {
         return $this->belongsTo(User::class, 'student_id');
     }
+
+    public function getFormattedTimeAttribute()
+    {
+        if (!$this->time_spent_seconds) return '0:00';
+        
+        $minutes = floor($this->time_spent_seconds / 60);
+        $seconds = $this->time_spent_seconds % 60;
+        
+        return sprintf('%d:%02d', $minutes, $seconds);
+    }
+
+    public function markAsCompleted($score, $timeSpent)
+    {
+        $this->update([
+            'score' => $score,
+            'time_spent_seconds' => $timeSpent,
+            'is_completed' => true,
+        ]);
+    }
 }
