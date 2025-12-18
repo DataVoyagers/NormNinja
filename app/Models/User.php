@@ -88,13 +88,14 @@ class User extends Authenticatable
         return $this->hasMany(ForumPost::class);
     }
 
-    public function assignments()
+    public function calendarEvents()
     {
-        return $this->hasMany(Assignment::class, 'teacher_id');
+        return $this->hasMany(CalendarEvent::class);
     }
 
-    public function assignmentSubmissions()
+    public function reminders()
     {
-        return $this->hasMany(AssignmentSubmission::class, 'student_id');
+        return $this->hasMany(Reminder::class);
     }
+    
 }
