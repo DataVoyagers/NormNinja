@@ -83,11 +83,11 @@
                 <i class="fas fa-user-tie text-3xl text-green-600 mb-2"></i>
                 <p class="text-green-800 font-semibold">Add Teacher</p>
             </a>
-            <a href="{{ route('admin.students') }}" class="bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg p-4 text-center transition duration-200">
+            <a href="{{ route('admin.students.index') }}" class="bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg p-4 text-center transition duration-200">
                 <i class="fas fa-users text-3xl text-purple-600 mb-2"></i>
                 <p class="text-purple-800 font-semibold">Manage Students</p>
             </a>
-            <a href="{{ route('admin.teachers') }}" class="bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg p-4 text-center transition duration-200">
+            <a href="{{ route('admin.teachers.index') }}" class="bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg p-4 text-center transition duration-200">
                 <i class="fas fa-chalkboard-teacher text-3xl text-orange-600 mb-2"></i>
                 <p class="text-orange-800 font-semibold">Manage Teachers</p>
             </a>
