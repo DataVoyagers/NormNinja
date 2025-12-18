@@ -29,7 +29,7 @@
         <div class="mt-6 bg-white rounded-lg shadow-md p-4">
             <form method="GET" action="{{ route('games.leaderboard') }}" class="flex items-center gap-4">
                 <label for="game_filter" class="text-gray-700 font-semibold">Filter by Game:</label>
-                <select name="game_id" id="game_filter" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" onchange="if(this.value) window.location.href='{{ route('games.leaderboard') }}/' + this.value; else this.form.submit();">
+                <select name="game_id" id="game_filter" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" onchange="if(this.value) window.location.href='/games/' + this.value + '/leaderboard'; else window.location.href='{{ route('games.leaderboard') }}';">
                     <option value="">All Games</option>
                     @foreach($games as $g)
                         <option value="{{ $g->id }}">{{ $g->title }}</option>
