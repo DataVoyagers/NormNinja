@@ -170,7 +170,6 @@ class StudentController extends Controller
             'materials_available' => LearningMaterial::where('is_published', true)->count(),
             'active_forums' => Forum::where('is_active', true)->count(),
             'calendarEvents' => CalendarEvent::where('user_id', $student->id)->get(),
-            'reminders' => Reminder::where('user_id', $student->id)->get(),
         ];
 
         // Available content
@@ -178,8 +177,6 @@ class StudentController extends Controller
         $availableQuizzes = Quiz::where('is_published', true)->latest()->take(5)->get();
         $availableGames = Game::where('is_published', true)->latest()->take(5)->get();
         $calendarEvents = CalendarEvent::where('user_id', $student->id)->get();
-        $reminders = Reminder::where('user_id', $student->id)->get();
-
         return view('student.dashboard', compact(
             'stats',
             'recentQuizAttempts',
@@ -188,7 +185,6 @@ class StudentController extends Controller
             'availableQuizzes',
             'availableGames',
             'calendarEvents',
-            'reminders',
             'quizSort',
             'gameSort'
         ));

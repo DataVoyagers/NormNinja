@@ -30,6 +30,11 @@ class AdminController extends Controller
 
         return view('admin.dashboard', compact('stats'));
     }
+    public function showProfile()
+    {
+        $user = auth()->user();
+        return view('admin.profile', compact('user'));
+    }
 
     // Student Management
     public function students()
@@ -198,11 +203,5 @@ class AdminController extends Controller
         
         $teacher->delete();
         return redirect()->route('admin.teachers.index')->with('success', 'Teacher deleted successfully.');
-    }
-
-    public function showProfile()
-    {
-        $user = auth()->user();
-        return view('admin.profile-view', compact('user'));
     }
 }
