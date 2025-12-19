@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+//
 @section('title', 'Edit Forum')
 
 @section('content')
@@ -139,4 +139,5 @@
         </form>
     </div>
 </div>
+
 @endsection
