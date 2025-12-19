@@ -178,7 +178,7 @@
                     <div class="border rounded-lg p-4 hover:bg-gray-50 transition duration-200">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
-                                <h3 class="font-semibold text-gray-800">{{ $attempt->game->title }}</h3>
+                                <h3 class="font-semibold text-gray-800">{{ $attempt->game?->title }}</h3>
                                 <p class="text-sm text-gray-500 mt-1">
                                     <i class="fas fa-clock mr-1"></i>
                                     {{ gmdate('i:s', $attempt->time_spent_seconds) }}
