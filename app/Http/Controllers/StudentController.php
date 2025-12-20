@@ -80,6 +80,7 @@ class StudentController extends Controller
         // Get recent quiz attempts with sorting
         $quizQuery = $student->quizAttempts()
             ->with('quiz')
+            ->whereHas('quiz')
             ->where('is_completed', true);
 
         // Apply quiz sorting
