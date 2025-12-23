@@ -3,60 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Quiz;
-use App\Models\QuizQuestion;
 use App\Models\QuizAttempt;
 use Illuminate\Http\Request;
 use App\Models\Reminder;
 
 class QuizController extends Controller
 {
-    public function index()
-    {
-        if (auth()->user()->isTeacher()) {
-            $quizzes = auth()->user()->quizzes()->latest()->paginate(15);
-        } else {
-            $quizzes = Quiz::where('is_published', true)->latest()->paginate(15);
-        }
-        
-        return view('quizzes.index', compact('quizzes'));
-    }
-
-    public function create()
-    {
-        $this->authorize('create', Quiz::class);
-        return view('quizzes.create');
-    }
-
-    public function store(Request $request)
-    {
-        $this->authorize('create', Quiz::class);
-
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'subject' => 'nullable|string',
-            'duration_minutes' => 'nullable|integer|min:1',
-            'passing_score' => 'required|integer|min:0|max:100',
-            'is_published' => 'boolean',
-            'available_from' => 'nullable|date',
-            'available_until' => 'nullable|date|after:available_from',
-        ]);
-
-        $quiz = Quiz::create([
-            'teacher_id' => auth()->id(),
-            'title' => $request->title,
-            'description' => $request->description,
-            'subject' => $request->subject,
-            'duration_minutes' => $request->duration_minutes,
-            'passing_score' => $request->passing_score,
-            'is_published' => $request->boolean('is_published'),
-            'available_from' => $request->available_from,
-            'available_until' => $request->available_until,
-        ]);
-
-        return redirect()->route('quizzes.questions.index', $quiz)->with('success', 'Quiz created successfully. Now add questions.');
-    }
-
     public function show(Quiz $quiz)
     {
         if (!$quiz->is_published && !auth()->user()->isTeacher()) {
@@ -69,59 +21,6 @@ class QuizController extends Controller
         }
 
         return view('quizzes.show', compact('quiz', 'userAttempts'));
-    }
-
-    public function edit(Quiz $quiz)
-    {
-        $this->authorize('update', $quiz);
-        return view('quizzes.edit', compact('quiz'));
-    }
-
-    public function update(Request $request, Quiz $quiz)
-    {
-        $this->authorize('update', $quiz);
-
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'subject' => 'nullable|string',
-            'duration_minutes' => 'nullable|integer|min:1',
-            'passing_score' => 'required|integer|min:0|max:100',
-            'is_published' => 'boolean',
-            'available_from' => 'nullable|date',
-            'available_until' => 'nullable|date|after:available_from',
-        ]);
-
-        // Check if quiz is being published for the first time
-        $wasUnpublished = !$quiz->is_published;
-        $willBePublished = $request->boolean('is_published');
-
-        $quiz->update([
-            'title' => $request->title,
-            'description' => $request->description,
-            'subject' => $request->subject,
-            'duration_minutes' => $request->duration_minutes,
-            'passing_score' => $request->passing_score,
-            'is_published' => $request->boolean('is_published'),
-            'available_from' => $request->available_from,
-            'available_until' => $request->available_until,
-        ]);
-
-
-        // Notify students if quiz is being published for the first time
-        // if ($wasUnpublished && $willBePublished) {
-        //     $this->notifyStudentsAboutNewContent('quiz', $quiz);
-        // }
-
-        return redirect()->route('quizzes.index')->with('success', 'Quiz updated successfully.');
-    }
-
-    public function destroy(Quiz $quiz)
-    {
-        $this->authorize('delete', $quiz);
-        $quiz->delete();
-
-        return redirect()->route('quizzes.index')->with('success', 'Quiz deleted successfully.');
     }
 
     // Quiz taking functionality
