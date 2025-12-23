@@ -9,13 +9,7 @@
     <div class="flex justify-between items-center mb-8">
         <div>
             <h1 class="text-3xl font-bold text-gray-800">Learning Materials</h1>
-            <p class="text-gray-600 mt-2">
-                @if(auth()->user()->isTeacher())
-                    Upload and manage learning resources for your students
-                @else
-                    Access study materials and resources
-                @endif
-            </p>
+            
         </div>
         @if(auth()->user()->isTeacher())
         <a href="{{ route('learning-materials.create') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition duration-200">

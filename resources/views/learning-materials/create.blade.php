@@ -12,7 +12,6 @@
             </a>
         </div>
         <h1 class="text-3xl font-bold text-gray-800">Upload Learning Material</h1>
-        <p class="text-gray-600 mt-2">Share educational resources with your students</p>
     </div>
 
     <!-- Form -->
