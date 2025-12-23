@@ -21,21 +21,6 @@ class QuizPolicy
         return $quiz->is_published;
     }
 
-    public function create(User $user): bool
-    {
-        return $user->isTeacher();
-    }
-
-    public function update(User $user, Quiz $quiz): bool
-    {
-        return $user->isTeacher() && $quiz->teacher_id === $user->id;
-    }
-
-    public function delete(User $user, Quiz $quiz): bool
-    {
-        return $user->isTeacher() && $quiz->teacher_id === $user->id;
-    }
-
     public function take(User $user, Quiz $quiz): bool
     {
         return $user->isStudent() && $quiz->is_published;
