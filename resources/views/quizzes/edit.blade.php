@@ -142,6 +142,7 @@
             <!-- Published Status -->
             <div class="mb-6">
                 <label class="flex items-center">
+                    <input type="hidden" name="is_published" value="0">
                     <input type="checkbox" 
                            name="is_published" 
                            value="1" 
