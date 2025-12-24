@@ -60,7 +60,7 @@
             "php artisan clear-compiled",
             "php artisan package:discover",
             "php artisan config:cache",
-            "php artisan route:cache"
+            "@php artisan route:cache || true"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
