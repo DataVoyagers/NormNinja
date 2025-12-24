@@ -49,6 +49,16 @@
     </div>
     @endif
 
+    <!-- Student Helper Text -->
+    @if(auth()->user()->isStudent() && $materials->count() > 0)
+    <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-6 rounded">
+        <div class="flex items-center">
+            <i class="fas fa-info-circle mr-2"></i>
+            <p><strong>Tip:</strong> Click on any material card or the "View & Download" button to access your learning materials.</p>
+        </div>
+    </div>
+    @endif
+
     <!-- Materials Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($materials as $material)
