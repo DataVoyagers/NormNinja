@@ -12,7 +12,6 @@
             </a>
         </div>
         <h1 class="text-3xl font-bold text-gray-800">Edit Learning Material</h1>
-        <p class="text-gray-600 mt-2">Update material information and content</p>
     </div>
 
     <!-- Form -->
