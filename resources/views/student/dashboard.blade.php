@@ -29,14 +29,14 @@
         <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-green-500">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-gray-500 text-sm font-semibold uppercase">Avg Score</p>
+                    <p class="text-gray-500 text-sm font-semibold uppercase">Avg Quiz Score</p>
                     <p class="text-3xl font-bold text-gray-800 mt-2">{{ $stats['average_quiz_score'] }}%</p>
                 </div>
                 <div class="bg-green-100 rounded-full p-3">
                     <i class="fas fa-chart-line text-2xl text-green-600"></i>
                 </div>
             </div>
-        </div>
+        </div> 
 
         <!-- Games Played -->
         <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-purple-500">
@@ -178,7 +178,7 @@
                     <div class="border rounded-lg p-4 hover:bg-gray-50 transition duration-200">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
-                                <h3 class="font-semibold text-gray-800">{{ $attempt->game->title }}</h3>
+                                <h3 class="font-semibold text-gray-800">{{ $attempt->game?->title }}</h3>
                                 <p class="text-sm text-gray-500 mt-1">
                                     <i class="fas fa-clock mr-1"></i>
                                     {{ gmdate('i:s', $attempt->time_spent_seconds) }}
