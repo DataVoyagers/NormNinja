@@ -6,7 +6,6 @@ use App\Models\Quiz;
 use App\Models\QuizQuestion;
 use App\Models\QuizAttempt;
 use Illuminate\Http\Request;
-use App\Models\Reminder;
 
 class QuizController extends Controller
 {
@@ -136,12 +135,6 @@ class QuizController extends Controller
             'student_id' => auth()->id(),
             'answers' => [],
             'started_at' => now(),
-        ]);
-
-        Reminder::create([
-            'user_id' => auth()->id(),
-            'text' => 'Complete Quiz: ' . $quiz->title . ' - Don\'t forget to complete this quiz!',
-            'is_completed' => false,
         ]);
 
         return redirect()->route('quizzes.take', ['quiz' => $quiz, 'attempt' => $attempt]);
