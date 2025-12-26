@@ -35,7 +35,7 @@
     </div>
     @endif
 
-    <!-- Performance Table tgh fikir mau bgi apa -->
+    <!-- Performance Table -->
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
