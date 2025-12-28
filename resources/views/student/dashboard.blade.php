@@ -78,196 +78,8 @@
         </div>
     </div>
 
-    <!-- Quick Access -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Recent Quiz Attempts -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-bold text-gray-800">Recent Quiz Results</h2>
-                <a href="{{ route('quizzes.index') }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-semibold">
-                    View All <i class="fas fa-arrow-right ml-1"></i>
-                </a>
-            </div>
 
-            <!-- Sort Dropdown -->
-            <div class="mb-4">
-                <form method="GET" action="{{ route('student.dashboard') }}" id="quizSortForm">
-                    @if(request('game_sort'))
-                        <input type="hidden" name="game_sort" value="{{ request('game_sort') }}">
-                    @endif
-                    <div class="flex items-center gap-2">
-                        <label class="text-sm font-semibold text-gray-600">Sort by:</label>
-                        <select name="quiz_sort"
-                                onchange="document.getElementById('quizSortForm').submit()"
-                                class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <option value="alphabet_az" {{ $quizSort == 'alphabet_az' ? 'selected' : '' }}>Alphabet (A-Z)</option>
-                            <option value="alphabet_za" {{ $quizSort == 'alphabet_za' ? 'selected' : '' }}>Alphabet (Z-A)</option>
-                            <option value="date_newest" {{ $quizSort == 'date_newest' ? 'selected' : '' }}>Date (Newest)</option>
-                            <option value="date_oldest" {{ $quizSort == 'date_oldest' ? 'selected' : '' }}>Date (Oldest)</option>
-                            <option value="time_newest" {{ $quizSort == 'time_newest' ? 'selected' : '' }}>Time (Newest)</option>
-                            <option value="time_oldest" {{ $quizSort == 'time_oldest' ? 'selected' : '' }}>Time (Oldest)</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            @if($recentQuizAttempts->count() > 0)
-                <div class="space-y-3">
-                    @foreach($recentQuizAttempts as $attempt)
-                    <div class="border rounded-lg p-4 hover:bg-gray-50 transition duration-200">
-                        <div class="flex items-center justify-between">
-                            <div class="flex-1">
-                                <h3 class="font-semibold text-gray-800">{{ $attempt->quiz->title ?? 'Quiz Deleted' }}</h3>
-                                <p class="text-sm text-gray-500 mt-1">{{ $attempt->completed_at ? $attempt->completed_at->format('M d, Y') : '' }}</p>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-2xl font-bold {{ $attempt->passed ? 'text-green-600' : 'text-red-600' }}">
-                                    {{ $attempt->percentage }}%
-                                </div>
-                                <div class="text-xs {{ $attempt->passed ? 'text-green-600' : 'text-red-600' }}">
-                                    {{ $attempt->passed ? 'Passed' : 'Failed' }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="text-center py-8">
-                    <i class="fas fa-clipboard-list text-gray-300 text-5xl mb-3"></i>
-                    <p class="text-gray-500">No quiz attempts yet</p>
-                    <a href="{{ route('quizzes.index') }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-semibold mt-2 inline-block">
-                        Take Your First Quiz
-                    </a>
-                </div>
-            @endif
-        </div>
-
-        <!-- Recent Game Attempts -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-bold text-gray-800">Recent Game Scores</h2>
-                <a href="{{ route('games.index') }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-semibold">
-                    View All <i class="fas fa-arrow-right ml-1"></i>
-                </a>
-            </div>
-
-            <!-- Sort Dropdown -->
-            <div class="mb-4">
-                <form method="GET" action="{{ route('student.dashboard') }}" id="gameSortForm">
-                    @if(request('quiz_sort'))
-                        <input type="hidden" name="quiz_sort" value="{{ request('quiz_sort') }}">
-                    @endif
-                    <div class="flex items-center gap-2">
-                        <label class="text-sm font-semibold text-gray-600">Sort by:</label>
-                        <select name="game_sort"
-                                onchange="document.getElementById('gameSortForm').submit()"
-                                class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <option value="alphabet_az" {{ $gameSort == 'alphabet_az' ? 'selected' : '' }}>Alphabet (A-Z)</option>
-                            <option value="alphabet_za" {{ $gameSort == 'alphabet_za' ? 'selected' : '' }}>Alphabet (Z-A)</option>
-                            <option value="date_newest" {{ $gameSort == 'date_newest' ? 'selected' : '' }}>Date (Newest)</option>
-                            <option value="date_oldest" {{ $gameSort == 'date_oldest' ? 'selected' : '' }}>Date (Oldest)</option>
-                            <option value="time_newest" {{ $gameSort == 'time_newest' ? 'selected' : '' }}>Time (Newest)</option>
-                            <option value="time_oldest" {{ $gameSort == 'time_oldest' ? 'selected' : '' }}>Time (Oldest)</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            @if($recentGameAttempts->count() > 0)
-                <div class="space-y-3">
-                    @foreach($recentGameAttempts as $attempt)
-                    <div class="border rounded-lg p-4 hover:bg-gray-50 transition duration-200">
-                        <div class="flex items-center justify-between">
-                            <div class="flex-1">
-                                <h3 class="font-semibold text-gray-800">{{ $attempt->game?->title }}</h3>
-                                <p class="text-sm text-gray-500 mt-1">
-                                    <i class="fas fa-clock mr-1"></i>
-                                    {{ gmdate('i:s', $attempt->time_spent_seconds) }}
-                                </p>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-2xl font-bold text-purple-600">
-                                    {{ $attempt->score }}
-                                </div>
-                                <div class="text-xs text-gray-500">points</div>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="text-center py-8">
-                    <i class="fas fa-gamepad text-gray-300 text-5xl mb-3"></i>
-                    <p class="text-gray-500">No games played yet</p>
-                    <a href="{{ route('games.index') }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-semibold mt-2 inline-block">
-                        Play Your First Game
-                    </a>
-                </div>
-            @endif
-        </div>
-    </div>
-
-    <!-- Calendar Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Calendar (2/3 width) -->
-        <div class="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-bold text-gray-800">
-                    <i class="fas fa-calendar text-indigo-600 mr-2"></i>
-                    Schedule Calendar
-                </h2>
-            </div>
-
-            <!-- Calendar Navigation -->
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800" id="currentMonth"></h3>
-                <div class="flex gap-2">
-                    <button onclick="previousMonth()" class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button onclick="currentMonth()" class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition">
-                        Today
-                    </button>
-                    <button onclick="nextMonth()" class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Calendar Grid -->
-            <div class="border rounded-lg overflow-hidden">
-                <!-- Day Headers -->
-                <div class="grid grid-cols-7 bg-gray-100">
-                    <div class="p-2 text-center text-xs font-semibold text-gray-600">Sun</div>
-                    <div class="p-2 text-center text-xs font-semibold text-gray-600">Mon</div>
-                    <div class="p-2 text-center text-xs font-semibold text-gray-600">Tue</div>
-                    <div class="p-2 text-center text-xs font-semibold text-gray-600">Wed</div>
-                    <div class="p-2 text-center text-xs font-semibold text-gray-600">Thu</div>
-                    <div class="p-2 text-center text-xs font-semibold text-gray-600">Fri</div>
-                    <div class="p-2 text-center text-xs font-semibold text-gray-600">Sat</div>
-                </div>
-
-                <!-- Calendar Days -->
-                <div id="calendarDays" class="grid grid-cols-7">
-                    <!-- Days will be populated by JavaScript -->
-                </div>
-            </div>
-
-            <!-- Add Event Button -->
-            <button onclick="openAddEventModal()" class="mt-4 w-full bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition">
-                <i class="fas fa-plus mr-2"></i>Add Event
-            </button>
-        </div>
-
-        <!-- Events List (1/3 width) -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">Upcoming Events</h3>
-            <div id="eventsList" class="space-y-2 max-h-[500px] overflow-y-auto">
-                <!-- Events will be populated here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Available Content -->
+      <!-- Available Content -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Learning Materials -->
         <div class="bg-white rounded-lg shadow-md p-6">
@@ -340,6 +152,72 @@
     </div>
 </div>
 
+
+  <!-- Calendar Section -->
+   <div class="mt-12">
+     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Calendar (2/3 width) -->
+        <div class="lg:col-span-2 bg-white rounded-lg shadow-md p-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800">
+                    <i class="fas fa-calendar text-indigo-600 mr-2"></i>
+                    Schedule Calendar
+                </h2>
+            </div>
+
+
+            <!-- Calendar Navigation -->
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-800" id="currentMonth"></h3>
+                <div class="flex gap-2">
+                    <button onclick="previousMonth()" class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button onclick="currentMonth()" class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition">
+                        Today
+                    </button>
+                    <button onclick="nextMonth()" class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="border rounded-lg overflow-hidden">
+                <!-- Day Headers -->
+                <div class="grid grid-cols-7 bg-gray-100">
+                    <div class="p-2 text-center text-xs font-semibold text-gray-600">Sun</div>
+                    <div class="p-2 text-center text-xs font-semibold text-gray-600">Mon</div>
+                    <div class="p-2 text-center text-xs font-semibold text-gray-600">Tue</div>
+                    <div class="p-2 text-center text-xs font-semibold text-gray-600">Wed</div>
+                    <div class="p-2 text-center text-xs font-semibold text-gray-600">Thu</div>
+                    <div class="p-2 text-center text-xs font-semibold text-gray-600">Fri</div>
+                    <div class="p-2 text-center text-xs font-semibold text-gray-600">Sat</div>
+                </div>
+
+                <!-- Calendar Days -->
+                <div id="calendarDays" class="grid grid-cols-7">
+                    <!-- Days will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Add Event Button -->
+            <button onclick="openAddEventModal()" class="mt-4 w-full bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition">
+                <i class="fas fa-plus mr-2"></i>Add Event
+            </button>
+        </div>
+
+        <!-- Events List (1/3 width) -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Upcoming Events</h3>
+            <div id="eventsList" class="space-y-2 max-h-[500px] overflow-y-auto">
+                <!-- Events will be populated here -->
+            </div>
+        </div>
+    </div>
+</div>
+  
+
 <!-- Add/Edit Event Modal -->
 <div id="eventModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg p-6 w-96 shadow-xl">
@@ -396,6 +274,138 @@
         </form>
     </div>
 </div>
+
+
+    <!-- Quick Access -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
+        <!-- Recent Quiz Attempts -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Recent Quiz Results</h2>
+                <a href="{{ route('quizzes.index') }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-semibold">
+                    View All <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+
+            <!-- Sort Dropdown -->
+            <div class="mb-4">
+                <form method="GET" action="{{ route('student.dashboard') }}" id="quizSortForm">
+                    @if(request('game_sort'))
+                        <input type="hidden" name="game_sort" value="{{ request('game_sort') }}">
+                    @endif
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-semibold text-gray-600">Sort by:</label>
+                        <select name="quiz_sort"
+                                onchange="document.getElementById('quizSortForm').submit()"
+                                class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="alphabet_az" {{ $quizSort == 'alphabet_az' ? 'selected' : '' }}>Alphabet (A-Z)</option>
+                            <option value="alphabet_za" {{ $quizSort == 'alphabet_za' ? 'selected' : '' }}>Alphabet (Z-A)</option>
+                            <option value="date_newest" {{ $quizSort == 'date_newest' ? 'selected' : '' }}>Date (Newest)</option>
+                            <option value="date_oldest" {{ $quizSort == 'date_oldest' ? 'selected' : '' }}>Date (Oldest)</option>
+                            <option value="time_newest" {{ $quizSort == 'time_newest' ? 'selected' : '' }}>Time (Newest)</option>
+                            <option value="time_oldest" {{ $quizSort == 'time_oldest' ? 'selected' : '' }}>Time (Oldest)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            @if($recentQuizAttempts->count() > 0)
+                <div class="space-y-3">
+                    @foreach($recentQuizAttempts as $attempt)
+                    <div class="border rounded-lg p-4 hover:bg-gray-50 transition duration-200">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-800">{{ $attempt->quiz->title ?? 'Quiz Deleted' }}</h3>
+                                <p class="text-sm text-gray-500 mt-1">{{ $attempt->completed_at ? $attempt->completed_at->format('M d, Y') : '' }}</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold {{ $attempt->passed ? 'text-green-600' : 'text-red-600' }}">
+                                    {{ $attempt->percentage }}%
+                                </div>
+                                <div class="text-xs {{ $attempt->passed ? 'text-green-600' : 'text-red-600' }}">
+                                    {{ $attempt->passed ? 'Passed' : 'Failed' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-8">
+                    <i class="fas fa-clipboard-list text-gray-300 text-5xl mb-3"></i>
+                    <p class="text-gray-500">No quiz attempts yet</p>
+                    <a href="{{ route('quizzes.index') }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-semibold mt-2 inline-block">
+                        Take Your First Quiz
+                    </a>
+                </div>
+            @endif
+        </div>
+
+
+        <!-- Recent Game Attempts -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Recent Game Scores</h2>
+                <a href="{{ route('games.index') }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-semibold">
+                    View All <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+
+            <!-- Sort Dropdown -->
+            <div class="mb-4">
+                <form method="GET" action="{{ route('student.dashboard') }}" id="gameSortForm">
+                    @if(request('quiz_sort'))
+                        <input type="hidden" name="quiz_sort" value="{{ request('quiz_sort') }}">
+                    @endif
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-semibold text-gray-600">Sort by:</label>
+                        <select name="game_sort"
+                                onchange="document.getElementById('gameSortForm').submit()"
+                                class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="alphabet_az" {{ $gameSort == 'alphabet_az' ? 'selected' : '' }}>Alphabet (A-Z)</option>
+                            <option value="alphabet_za" {{ $gameSort == 'alphabet_za' ? 'selected' : '' }}>Alphabet (Z-A)</option>
+                            <option value="date_newest" {{ $gameSort == 'date_newest' ? 'selected' : '' }}>Date (Newest)</option>
+                            <option value="date_oldest" {{ $gameSort == 'date_oldest' ? 'selected' : '' }}>Date (Oldest)</option>
+                            <option value="time_newest" {{ $gameSort == 'time_newest' ? 'selected' : '' }}>Time (Newest)</option>
+                            <option value="time_oldest" {{ $gameSort == 'time_oldest' ? 'selected' : '' }}>Time (Oldest)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            @if($recentGameAttempts->count() > 0)
+                <div class="space-y-3">
+                    @foreach($recentGameAttempts as $attempt)
+                    <div class="border rounded-lg p-4 hover:bg-gray-50 transition duration-200">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-800">{{ $attempt->game?->title }}</h3>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    {{ gmdate('i:s', $attempt->time_spent_seconds) }}
+                                </p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold text-purple-600">
+                                    {{ $attempt->score }}
+                                </div>
+                                <div class="text-xs text-gray-500">points</div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-8">
+                    <i class="fas fa-gamepad text-gray-300 text-5xl mb-3"></i>
+                    <p class="text-gray-500">No games played yet</p>
+                    <a href="{{ route('games.index') }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-semibold mt-2 inline-block">
+                        Play Your First Game
+                    </a>
+                </div>
+            @endif
+        </div>
+    </div>
+
+  
 
 <!-- CSRF Token for AJAX -->
 <meta name="csrf-token" content="{{ csrf_token() }}">
