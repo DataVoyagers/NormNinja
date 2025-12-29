@@ -12,6 +12,50 @@
 
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <!-- Overall Course Progress -->
+        @php
+            $progress = $stats['course_progress'];
+    
+            // Determine color based on progress
+            if ($progress >= 75) {
+                $borderColor = 'border-green-500';
+                $bgColor = 'bg-green-100';
+                $textColor = 'text-green-600';
+                $barColor = 'bg-green-500';
+            } elseif ($progress >= 50) {
+                $borderColor = 'border-blue-500';
+                $bgColor = 'bg-blue-100';
+                $textColor = 'text-blue-600';
+                $barColor = 'bg-blue-500';
+            } elseif ($progress >= 25) {
+                $borderColor = 'border-yellow-500';
+                $bgColor = 'bg-yellow-100';
+                $textColor = 'text-yellow-600';
+                $barColor = 'bg-yellow-500';
+            } else {
+                $borderColor = 'border-red-500';
+                $bgColor = 'bg-red-100';
+                $textColor = 'text-red-600';
+                $barColor = 'bg-red-500';
+            }
+        @endphp
+
+        <div class="bg-white rounded-lg shadow-md p-6 border-t-4 {{ $borderColor }}">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-semibold uppercase">Course Progress</p>
+                    <p class="text-3xl font-bold text-gray-800 mt-2">{{ $progress }}%</p>
+                </div>
+                <div class="{{ $bgColor }} rounded-full p-3">
+                    <i class="fas fa-chart-line text-2xl {{ $textColor }}"></i>
+                </div>
+            </div>
+            <!-- Progress bar with dynamic color -->
+            <div class="mt-3 w-full bg-gray-200 rounded-full h-2">
+                <div class="{{ $barColor }} h-2 rounded-full transition-all duration-300" 
+                    style="width: {{ $progress }}%"></div>
+            </div>
+        </div>
         <!-- Completed Quizzes -->
         <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-blue-500">
             <div class="flex items-center justify-between">
@@ -25,18 +69,6 @@
             </div>
         </div>
 
-        <!-- Average Score -->
-        <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-green-500">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-500 text-sm font-semibold uppercase">Avg Quiz Score</p>
-                    <p class="text-3xl font-bold text-gray-800 mt-2">{{ $stats['average_quiz_score'] }}%</p>
-                </div>
-                <div class="bg-green-100 rounded-full p-3">
-                    <i class="fas fa-chart-line text-2xl text-green-600"></i>
-                </div>
-            </div>
-        </div> 
 
         <!-- Games Played -->
         <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-purple-500">

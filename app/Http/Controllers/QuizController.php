@@ -6,6 +6,7 @@ use App\Models\Quiz;
 use App\Models\QuizQuestion;
 use App\Models\QuizAttempt;
 use Illuminate\Http\Request;
+use App\Models\Reminder;
 
 class QuizController extends Controller
 {
@@ -137,6 +138,12 @@ class QuizController extends Controller
             'started_at' => now(),
         ]);
 
+        // Reminder::create([
+        //     'user_id' => auth()->id(),
+        //     'text' => 'Complete Quiz: ' . $quiz->title . ' - Don\'t forget to complete this quiz!',
+        //     'is_completed' => false,
+        // ]);
+
         return redirect()->route('quizzes.take', ['quiz' => $quiz, 'attempt' => $attempt]);
     }
 
@@ -195,4 +202,36 @@ class QuizController extends Controller
 
         return view('quizzes.result', compact('quiz', 'attempt'));
     }
+
+
+    public function statistics(Quiz $quiz)
+    {
+        // Get only the best attempt for each student
+        $attemptsCollection = QuizAttempt::where('quiz_id', $quiz->id)
+            ->whereNotNull('completed_at')
+            ->with('student')
+            ->get()
+            ->groupBy('student_id')
+            ->map(function ($studentAttempts) {
+                // Return the attempt with highest percentage
+                return $studentAttempts->sortByDesc('percentage')->first();
+            })
+            ->sortByDesc('percentage')
+            ->values();
+
+        // Manual pagination
+        $perPage = 20;
+        $currentPage = request()->get('page', 1);
+    
+        $attempts = new \Illuminate\Pagination\LengthAwarePaginator(
+            $attemptsCollection->forPage($currentPage, $perPage),
+            $attemptsCollection->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        return view('quizzes.statistics', compact('quiz', 'attempts'));
+    }
+
 }

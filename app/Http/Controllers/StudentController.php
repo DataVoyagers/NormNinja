@@ -7,6 +7,7 @@ use App\Models\Quiz;
 use App\Models\Game;
 use App\Models\Forum;
 use App\Models\CalendarEvent;
+use App\Models\Reminder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -46,6 +47,28 @@ class StudentController extends Controller
         return back();
     }
 
+    public function reminderStore(Request $request)
+    {
+        Reminder::create([
+            'user_id' => auth()->id(),
+            'text' => $request->text,
+            'date' => $request->date,
+        ]);
+        return back();
+    }
+
+    public function reminderUpdate(Request $request, Reminder $reminder)
+    {
+        $reminder->update($request->only(['text', 'date']));
+        return back();
+    }
+
+    public function reminderDelete(Reminder $reminder)
+    {
+        $reminder->delete();
+        return back();
+    }
+
     public function dashboard(Request $request)
     {
         $student = auth()->user();
@@ -57,7 +80,6 @@ class StudentController extends Controller
         // Get recent quiz attempts with sorting
         $quizQuery = $student->quizAttempts()
             ->with('quiz')
-            ->whereHas('quiz')
             ->where('is_completed', true);
 
         // Apply quiz sorting
@@ -143,7 +165,7 @@ class StudentController extends Controller
         // Statistics
         $stats = [
             'completed_quizzes' => $student->quizAttempts()->where('is_completed', true)->count(),
-            'average_quiz_score' => $averageScore,
+            'course_progress' => $this->calculateCourseProgress($student),
             'games_played' => $student->gameAttempts()->count(),
             'materials_available' => LearningMaterial::where('is_published', true)->count(),
             'active_forums' => Forum::where('is_active', true)->count(),
@@ -155,6 +177,7 @@ class StudentController extends Controller
         $availableQuizzes = Quiz::where('is_published', true)->latest()->take(5)->get();
         $availableGames = Game::where('is_published', true)->latest()->take(5)->get();
         $calendarEvents = CalendarEvent::where('user_id', $student->id)->get();
+
         return view('student.dashboard', compact(
             'stats',
             'recentQuizAttempts',
@@ -213,5 +236,26 @@ class StudentController extends Controller
         }
 
         return redirect()->route('student.profile')->with('success', 'Profile updated successfully.');
+    }
+
+    // Add this method to calculate progress:
+    private function calculateCourseProgress($student)
+    {
+        // Example calculation - adjust based on your requirements
+        $totalItems = 0;
+        $completedItems = 0;
+    
+        // Count quizzes
+        $totalQuizzes = Quiz::count();
+        $completedQuizzes = $student->quizAttempts()->distinct('quiz_id')->count();
+    
+        // Count games
+        $totalGames = Game::count();
+        $playedGames = $student->gameAttempts()->distinct('game_id')->count();
+    
+        $totalItems = $totalQuizzes + $totalGames;
+        $completedItems = $completedQuizzes + $playedGames;
+    
+        return $totalItems > 0 ? round(($completedItems / $totalItems) * 100) : 0;
     }
 }
