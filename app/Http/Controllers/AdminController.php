@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\Password;
 
 class AdminController extends Controller
 {
@@ -30,6 +31,7 @@ class AdminController extends Controller
 
         return view('admin.dashboard', compact('stats'));
     }
+
     public function showProfile()
     {
         $user = auth()->user();
@@ -53,7 +55,7 @@ class AdminController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'password' => ['required', Password::min(8)->letters()->numbers()],
             'student_id' => 'required|string|unique:users',
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
@@ -89,7 +91,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $student->id,
             'student_id' => 'required|string|unique:users,student_id,' . $student->id,
-            'password' => 'required|string|min:8',
+            'password' => ['nullable', Password::min(8)->letters()->numbers()],
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
             'date_of_birth' => 'nullable|date',
@@ -133,7 +135,7 @@ class AdminController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'password' => ['required', Password::min(8)->letters()->numbers()],
             'teacher_id' => 'required|string|unique:users',
             'phone' => 'nullable|string',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -174,7 +176,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $teacher->id,
             'teacher_id' => 'required|string|unique:users,teacher_id,' . $teacher->id,
-            'password' => 'required|string|min:8',
+            'password' => ['nullable', Password::min(8)->letters()->numbers()],
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
             'date_of_birth' => 'nullable|date',
