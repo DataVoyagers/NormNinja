@@ -61,7 +61,7 @@
                     </label>
                     <input type="password" id="password" name="password"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <p class="text-xs text-gray-500 mt-1">Minimum 8 characters if changing</p>
+                    <p class="text-xs text-gray-500 mt-1">Password must be at least 8 characters and contain both letters and numbers if changing</p>
                 </div>
 
                 <!-- Phone -->
@@ -113,4 +113,5 @@
         </form>
     </div>
 </div>
+
 @endsection
