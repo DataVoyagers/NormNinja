@@ -174,6 +174,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $teacher->id,
             'teacher_id' => 'required|string|unique:users,teacher_id,' . $teacher->id,
+            'password' => 'required|string|min:8',
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
             'date_of_birth' => 'nullable|date',
