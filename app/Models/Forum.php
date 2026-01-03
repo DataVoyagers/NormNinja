@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Forum extends Model
+class LearningMaterial extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -14,26 +14,20 @@ class Forum extends Model
         'teacher_id',
         'title',
         'description',
+        'file_path',
+        'file_type',
         'subject',
-        'is_active',
+        'grade_level',
+        'is_published',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        'is_published' => 'boolean',
+        'grade_level' => 'integer',
     ];
 
     public function teacher()
     {
         return $this->belongsTo(User::class, 'teacher_id');
-    }
-
-    public function posts()
-    {
-        return $this->hasMany(ForumPost::class);
-    }
-
-    public function topLevelPosts()
-    {
-        return $this->hasMany(ForumPost::class)->whereNull('parent_id');
     }
 }
