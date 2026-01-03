@@ -1,39 +1,38 @@
 <?php
 
-namespace App\Models;
+namespace App\Policies;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\User;
+use App\Models\Forum;
 
-class Forum extends Model
+class ForumPolicy
 {
-    use HasFactory, SoftDeletes;
-
-    protected $fillable = [
-        'teacher_id',
-        'title',
-        'description',
-        'subject',
-        'is_active',
-    ];
-
-    protected $casts = [
-        'is_active' => 'boolean',
-    ];
-
-    public function teacher()
+    public function viewAny(User $user): bool
     {
-        return $this->belongsTo(User::class, 'teacher_id');
+        return true;
     }
 
-    public function posts()
+    public function view(User $user, Forum $forum): bool
     {
-        return $this->hasMany(ForumPost::class);
+        if ($user->isTeacher()) {
+            return $forum->teacher_id === $user->id;
+        }
+        
+        return $forum->is_active;
     }
 
-    public function topLevelPosts()
+    public function create(User $user): bool
     {
-        return $this->hasMany(ForumPost::class)->whereNull('parent_id');
+        return $user->isTeacher();
+    }
+
+    public function update(User $user, Forum $forum): bool
+    {
+        return $user->isTeacher() && $forum->teacher_id === $user->id;
+    }
+
+    public function delete(User $user, Forum $forum): bool
+    {
+        return $user->isTeacher() && $forum->teacher_id === $user->id;
     }
 }
