@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Forum extends Model
+class Game extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -14,12 +14,15 @@ class Forum extends Model
         'teacher_id',
         'title',
         'description',
+        'game_type',
         'subject',
-        'is_active',
+        'game_data',
+        'is_published',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        'game_data' => 'array',
+        'is_published' => 'boolean',
     ];
 
     public function teacher()
@@ -27,13 +30,29 @@ class Forum extends Model
         return $this->belongsTo(User::class, 'teacher_id');
     }
 
-    public function posts()
+    public function attempts()
     {
-        return $this->hasMany(ForumPost::class);
+        return $this->hasMany(GameAttempt::class);
     }
 
-    public function topLevelPosts()
+    public function studentAttempts($studentId)
     {
-        return $this->hasMany(ForumPost::class)->whereNull('parent_id');
+        return $this->attempts()->where('student_id', $studentId);
+    }
+
+    public function averageScore()
+    {
+        return $this->attempts()
+            ->where('is_completed', true)
+            ->avg('score');
+    }
+
+    public function completionRate()
+    {
+        $total = $this->attempts()->count();
+        if ($total == 0) return 0;
+        
+        $completed = $this->attempts()->where('is_completed', true)->count();
+        return round(($completed / $total) * 100, 2);
     }
 }
