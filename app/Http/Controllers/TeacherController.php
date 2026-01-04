@@ -50,7 +50,7 @@ class TeacherController extends Controller
         $performanceData = [];
 
         foreach ($students as $student) {
-            // Get quiz performance
+            // Quiz performance
             $quizAttempts = QuizAttempt::where('student_id', $student->id)
                 ->whereHas('quiz', function($query) use ($teacher) {
                     $query->where('teacher_id', $teacher->id);
@@ -58,7 +58,10 @@ class TeacherController extends Controller
                 ->where('is_completed', true)
                 ->get();
 
-            // Calculate average manually
+            $completedQuizzes = $quizAttempts->count();
+            $totalQuizzes = $teacher->quizzes()->where('is_published', true)->count();
+
+            // Average quiz score
             $avgQuizScore = 0;
             if ($quizAttempts->count() > 0) {
                 $totalPercentage = 0;
@@ -70,20 +73,35 @@ class TeacherController extends Controller
                 $avgQuizScore = $totalPercentage / $quizAttempts->count();
             }
 
-            $totalQuizzes = $teacher->quizzes()->where('is_published', true)->count();
-            $completedQuizzes = $quizAttempts->count();
+            // Quiz completion rate
+            $quizCompletionRate = $totalQuizzes > 0 ? ($completedQuizzes / $totalQuizzes) * 100 : 0;
 
-            // Calculate completion rate
-            $completionRate = $totalQuizzes > 0 ? ($completedQuizzes / $totalQuizzes) * 100 : 0;
+            // Game performance
+            $gamesPlayed = $student->gameAttempts()
+            ->whereHas('game', function($q) use ($teacher) {
+                $q->where('teacher_id', $teacher->id)
+                  ->where('is_published', true);
+            })
+            ->get() // get all attempts first
+            ->pluck('game_id') // get game IDs
+            ->unique() // keep only unique games
+            ->count(); // count unique games
 
-            // Check for declining performance (compare recent vs earlier attempts)
+            $totalGames = $teacher->games()->where('is_published', true)->count();
+            $gamesCompletionRate = $totalGames > 0 ? ($gamesPlayed / $totalGames) * 100 : 0;
+
+            // Course progress (optional, include games too)
+            $courseProgress = ($totalQuizzes + $totalGames) > 0 
+                ? round(($completedQuizzes + $gamesPlayed) / ($totalQuizzes + $totalGames) * 100) 
+                : 0;
+
+            // Check for declining quiz performance
             $decliningPerformance = false;
             if ($quizAttempts->count() >= 3) {
                 $recentAttempts = $quizAttempts->sortByDesc('created_at')->take(3);
                 $earlierAttempts = $quizAttempts->sortBy('created_at')->take(3);
 
-                $recentAvg = 0;
-                $earlierAvg = 0;
+                $recentAvg = $earlierAvg = 0;
 
                 foreach ($recentAttempts as $attempt) {
                     if ($attempt->total_points > 0) {
@@ -108,25 +126,31 @@ class TeacherController extends Controller
             $needsSupport = false;
             $supportReasons = [];
 
-            // Criterion 1: Low quiz average
+            // Low quiz average
             if ($avgQuizScore < 60 && $completedQuizzes > 0) {
                 $needsSupport = true;
                 $supportReasons[] = "Low quiz average (" . round($avgQuizScore, 2) . "%)";
             }
 
-            // Criterion 2: Low completion rate
-            if ($totalQuizzes > 0 && $completionRate < 50) {
+            // Low quiz completion rate
+            if ($totalQuizzes > 0 && $quizCompletionRate < 50) {
                 $needsSupport = true;
-                $supportReasons[] = "Low completion rate (" . round($completionRate, 2) . "%)";
+                $supportReasons[] = "Low quiz completion (" . round($quizCompletionRate, 2) . "%)";
             }
 
-            // Criterion 3: No engagement
+            // Low game completion rate
+            if ($totalGames > 0 && $gamesCompletionRate < 50) {
+                $needsSupport = true;
+                $supportReasons[] = "Low game completion (" . round($gamesCompletionRate, 2) . "%)";
+            }
+
+            // No quiz attempts
             if ($totalQuizzes > 0 && $completedQuizzes == 0) {
                 $needsSupport = true;
                 $supportReasons[] = "No quiz attempts yet";
             }
 
-            // Criterion 4: Declining performance
+            // Declining performance
             if ($decliningPerformance) {
                 $needsSupport = true;
                 $supportReasons[] = "Performance declining over time";
@@ -137,19 +161,15 @@ class TeacherController extends Controller
                 'avg_quiz_score' => round($avgQuizScore, 2),
                 'completed_quizzes' => $completedQuizzes,
                 'total_quizzes' => $totalQuizzes,
-                'completion_rate' => round($completionRate, 2),
+                'games_played' => $gamesPlayed,
+                'total_games' => $totalGames,
+                'course_progress' => $courseProgress,
+                'quiz_completion_rate' => round($quizCompletionRate, 2),
+                'games_completion_rate' => round($gamesCompletionRate, 2),
                 'needs_support' => $needsSupport,
                 'support_reasons' => $supportReasons,
             ];
         }
-
-        // Sort by needs support first, then by average score
-        usort($performanceData, function($a, $b) {
-            if ($a['needs_support'] != $b['needs_support']) {
-                return $b['needs_support'] - $a['needs_support'];
-            }
-        return $a['avg_quiz_score'] - $b['avg_quiz_score'];
-        });
 
         return view('teacher.student-performance', compact('performanceData'));
     }
