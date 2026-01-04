@@ -124,9 +124,6 @@
 </div>
 
 
-
-
-
     <!-- Calendar Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6 mb-10">
         <!-- Calendar (2/3 width) -->
@@ -187,6 +184,67 @@
             </div>
         </div>
     </div>
+
+<!-- Add/Edit Event Modal -->
+<div id="eventModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-96 shadow-xl">
+        <h3 class="text-xl font-bold text-gray-800 mb-4" id="eventModalTitle">Add Event</h3>
+        <form id="eventForm" onsubmit="saveEvent(event)">
+            <input type="hidden" id="eventId">
+            
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Event Title<span class="text-red-500">*</span> </label>
+                <input type="text" 
+                       id="eventTitle" 
+                       class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500" 
+                       required>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Event Date<span class="text-red-500">*</span> </label>
+                <input type="date" 
+                       id="eventDate" 
+                       class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500" 
+                       required>
+
+                <p id="dateHint" class="text-xs mt-1 text-gray-500">
+                    • Date cannot be in the past
+                </p>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Description (Optional)</label>
+                <textarea id="eventDescription" 
+                          class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500" 
+                          rows="3"></textarea>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Color</label>
+                <select id="eventColor" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    <option value="#14B8A6">Teal</option>
+                    <option value="#10B981">Green</option>
+                    <option value="#F59E0B">Orange</option>
+                    <option value="#EF4444">Red</option>
+                    <option value="#8B5CF6">Purple</option>
+                    <option value="#EC4899">Pink</option>
+                </select>
+            </div>
+            
+            <div class="flex justify-end gap-2">
+                <button type="button" 
+                        onclick="closeEventModal()" 
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        class="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 transition">
+                    Save Event
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
     <!-- Recent Activity Section -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
@@ -263,62 +321,6 @@
     </div>
 
     
-<!-- Add/Edit Event Modal -->
-<div id="eventModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-96 shadow-xl">
-        <h3 class="text-xl font-bold text-gray-800 mb-4" id="eventModalTitle">Add Event</h3>
-        <form id="eventForm" onsubmit="saveEvent(event)">
-            <input type="hidden" id="eventId">
-            
-            <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Event Title</label>
-                <input type="text" 
-                       id="eventTitle" 
-                       class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500" 
-                       required>
-            </div>
-            
-            <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Event Date</label>
-                <input type="date" 
-                       id="eventDate" 
-                       class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500" 
-                       required>
-            </div>
-            
-            <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Description (Optional)</label>
-                <textarea id="eventDescription" 
-                          class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500" 
-                          rows="3"></textarea>
-            </div>
-            
-            <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Color</label>
-                <select id="eventColor" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500">
-                    <option value="#14B8A6">Teal</option>
-                    <option value="#10B981">Green</option>
-                    <option value="#F59E0B">Orange</option>
-                    <option value="#EF4444">Red</option>
-                    <option value="#8B5CF6">Purple</option>
-                    <option value="#EC4899">Pink</option>
-                </select>
-            </div>
-            
-            <div class="flex justify-end gap-2">
-                <button type="button" 
-                        onclick="closeEventModal()" 
-                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
-                    Cancel
-                </button>
-                <button type="submit" 
-                        class="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 transition">
-                    Save Event
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
 
 <!-- CSRF Token for AJAX -->
 <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -332,6 +334,24 @@ const localOffset = now.getTimezoneOffset();
 const malaysiaTime = new Date(now.getTime() + (malaysiaOffset + localOffset) * 60000);
 let currentDate = new Date(malaysiaTime.getFullYear(), malaysiaTime.getMonth(), malaysiaTime.getDate());
 let events = [];
+
+function isDateValid(dateStr) {
+    if (!dateStr) return false;
+    const selected = new Date(dateStr + 'T00:00:00');
+    const today = getMalaysiaToday();
+    return selected >= getMalaysiaToday();
+}
+
+function getMalaysiaToday() {
+    const now = new Date();
+    const malaysiaOffset = 8 * 60; // UTC+8
+    const localOffset = now.getTimezoneOffset();
+    const malaysiaTime = new Date(now.getTime() + (malaysiaOffset + localOffset) * 60000);
+
+    return new Date(malaysiaTime.getFullYear(), malaysiaTime.getMonth(), malaysiaTime.getDate());
+}
+
+
 
 // Get CSRF token
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
@@ -376,7 +396,18 @@ async function loadEvents() {
 
 async function saveEvent(e) {
     e.preventDefault();
+    console.log("saveEvent triggered");
     
+    const dateValue = document.getElementById('eventDate').value;
+
+    if (!isDateValid(dateValue)) {
+        showNotification('Event date is invalid. Please select a valid date.', 'error');
+        document.getElementById('eventDate').classList.add('border-red-500', 'focus:ring-red-500');
+        return; 
+    } else {
+        document.getElementById('eventDate').classList.remove('border-red-500', 'focus:ring-red-500');
+    }
+
     const eventId = document.getElementById('eventId').value;
     const data = {
         title: document.getElementById('eventTitle').value,
@@ -451,7 +482,6 @@ function editEvent(event) {
     
     document.getElementById('eventDescription').value = event.description || '';
     document.getElementById('eventColor').value = event.color || '#14B8A6';
-    document.getElementById('notifyStudents').checked = false;
     document.getElementById('eventModal').classList.remove('hidden');
 }
 
@@ -532,33 +562,47 @@ function renderEventsList() {
         return;
     }
     
+    // Sort events by date
     const sortedEvents = [...events].sort((a, b) => {
         const dateA = a.date.includes(' ') ? a.date.split(' ')[0] : a.date;
         const dateB = b.date.includes(' ') ? b.date.split(' ')[0] : b.date;
         return new Date(dateA) - new Date(dateB);
     });
     
-    eventsList.innerHTML = sortedEvents.map(event => `
-        <div class="p-3 border rounded hover:bg-gray-50 transition" style="border-left: 4px solid ${event.color}">
-            <div class="flex items-start justify-between">
-                <div class="flex-1">
-                    <p class="font-semibold text-gray-800 text-sm">${event.title}</p>
-                    <p class="text-xs text-gray-500 mt-1">
-                        <i class="fas fa-calendar mr-1"></i>${formatDate(event.date)}
-                    </p>
-                    ${event.description ? `<p class="text-xs text-gray-600 mt-1">${event.description}</p>` : ''}
-                </div>
-                <div class="flex gap-2 ml-2">
-                    <button onclick='editEvent(${JSON.stringify(event)})' class="text-blue-500 hover:text-blue-700">
-                        <i class="fas fa-edit text-sm"></i>
-                    </button>
-                    <button onclick="deleteEvent(${event.id})" class="text-red-500 hover:text-red-700">
-                        <i class="fas fa-trash text-sm"></i>
-                    </button>
+    eventsList.innerHTML = sortedEvents.map(event => {
+        const eventDescription = event.description ? `<p class="text-xs text-gray-600 mt-1">${event.description}</p>` : '';
+        return `
+            <div class="p-3 border rounded hover:bg-gray-50 transition" style="border-left: 4px solid ${event.color}">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-800 text-sm">${event.title}</p>
+                        <p class="text-xs text-gray-500 mt-1">
+                            <i class="fas fa-calendar mr-1"></i>${formatDate(event.date)}
+                        </p>
+                        ${eventDescription}
+                    </div>
+                    <div class="flex gap-2 ml-2">
+                        <!-- Edit Button -->
+                        <button class="text-blue-500 hover:text-blue-700" 
+                                data-event='${JSON.stringify(event)}' 
+                                onclick="editEventFromButton(this)">
+                            <i class="fas fa-edit text-sm"></i>
+                        </button>
+                        <!-- Delete Button -->
+                        <button onclick="deleteEvent(${event.id})" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash text-sm"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
+}
+
+// Helper function for edit button
+function editEventFromButton(button) {
+    const event = JSON.parse(button.getAttribute('data-event'));
+    editEvent(event);
 }
 
 // ===== MODAL FUNCTIONS =====
