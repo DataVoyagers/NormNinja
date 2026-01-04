@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\CalendarEventController;
-use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TeacherController;
@@ -94,15 +93,6 @@ Route::middleware('auth')->group(function () {
         Route::put('/calendar-events/{event}', [CalendarEventController::class, 'update']);
         Route::delete('/calendar-events/{event}', [CalendarEventController::class, 'destroy']);
 });
-
-    // Reminders
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/reminders', [ReminderController::class, 'index']);
-        Route::post('/reminders', [ReminderController::class, 'store']);
-        Route::put('/reminders/{reminder}', [ReminderController::class, 'update']);
-        Route::patch('/reminders/{reminder}/toggle', [ReminderController::class, 'toggle']);
-        Route::delete('/reminders/{reminder}', [ReminderController::class, 'destroy']);
-    });
 
     // Learning Materials (accessible by teachers and students)
     Route::resource('learning-materials', LearningMaterialController::class);
