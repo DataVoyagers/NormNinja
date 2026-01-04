@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Quiz;
 use App\Models\QuizQuestion;
 use App\Models\QuizAttempt;
+use App\Models\User;
 use Illuminate\Http\Request;
-use App\Models\Reminder;
 
 class QuizController extends Controller
 {
@@ -107,12 +107,6 @@ class QuizController extends Controller
             'available_until' => $request->available_until,
         ]);
 
-
-        // Notify students if quiz is being published for the first time
-        // if ($wasUnpublished && $willBePublished) {
-        //     $this->notifyStudentsAboutNewContent('quiz', $quiz);
-        // }
-
         return redirect()->route('quizzes.index')->with('success', 'Quiz updated successfully.');
     }
 
@@ -137,12 +131,6 @@ class QuizController extends Controller
             'answers' => [],
             'started_at' => now(),
         ]);
-
-        // Reminder::create([
-        //     'user_id' => auth()->id(),
-        //     'text' => 'Complete Quiz: ' . $quiz->title . ' - Don\'t forget to complete this quiz!',
-        //     'is_completed' => false,
-        // ]);
 
         return redirect()->route('quizzes.take', ['quiz' => $quiz, 'attempt' => $attempt]);
     }
@@ -202,36 +190,58 @@ class QuizController extends Controller
 
         return view('quizzes.result', compact('quiz', 'attempt'));
     }
-
-
+    
     public function statistics(Quiz $quiz)
     {
-        // Get only the best attempt for each student
-        $attemptsCollection = QuizAttempt::where('quiz_id', $quiz->id)
+        // all students
+        $students = User::where('role', 'student')
+            ->get()
+            ->keyBy('id');
+
+        // 2.best attempt of every student
+        $attempts = QuizAttempt::where('quiz_id', $quiz->id)
             ->whereNotNull('completed_at')
             ->with('student')
             ->get()
             ->groupBy('student_id')
             ->map(function ($studentAttempts) {
-                // Return the attempt with highest percentage
                 return $studentAttempts->sortByDesc('percentage')->first();
-            })
-            ->sortByDesc('percentage')
-            ->values();
+            });
+        // 3. show all student
+        $results = $students->map(function ($student) use ($attempts) {
 
-        // Manual pagination
+            if (isset($attempts[$student->id])) {
+                return $attempts[$student->id];
+            }
+
+            // show not attempted record
+            return (object) [
+                'student'       => $student,
+                'percentage'    => null,
+                'score'         => null,
+                'completed_at'  => null,
+                'status'        => 'Not Attempted',
+            ];
+        });
+        // 4. sorting attempted and not attempted
+        $results = $results->sortByDesc(function ($item) {
+            return $item->percentage ?? -1;
+        })->values();
+
+        // 5. pagination
         $perPage = 20;
         $currentPage = request()->get('page', 1);
-    
-        $attempts = new \Illuminate\Pagination\LengthAwarePaginator(
-            $attemptsCollection->forPage($currentPage, $perPage),
-            $attemptsCollection->count(),
+
+        $paginatedResults = new \Illuminate\Pagination\LengthAwarePaginator(
+            $results->forPage($currentPage, $perPage),
+            $results->count(),
             $perPage,
             $currentPage,
             ['path' => request()->url(), 'query' => request()->query()]
         );
-
-        return view('quizzes.statistics', compact('quiz', 'attempts'));
+        return view('quizzes.statistics', [
+            'quiz'     => $quiz,
+            'attempts' => $paginatedResults
+        ]);
     }
-
 }
