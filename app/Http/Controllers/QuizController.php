@@ -190,10 +190,10 @@ class QuizController extends Controller
 
         return view('quizzes.result', compact('quiz', 'attempt'));
     }
-    
+
     public function statistics(Quiz $quiz)
     {
-        // all students
+        // 1. all students
         $students = User::where('role', 'student')
             ->get()
             ->keyBy('id');
@@ -239,7 +239,7 @@ class QuizController extends Controller
             $currentPage,
             ['path' => request()->url(), 'query' => request()->query()]
         );
-        return view('quizzes.statistics', [
+        return view('quizzes.quizstatistics', [
             'quiz'     => $quiz,
             'attempts' => $paginatedResults
         ]);
