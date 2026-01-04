@@ -63,7 +63,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500 text-sm font-semibold uppercase">Quizzes Done</p>
-                    <p class="text-3xl font-bold text-gray-800 mt-2">{{ $stats['completed_quizzes'] }}</p>
+                    <p class="text-3xl font-bold text-gray-800 mt-2">{{ $completedQuizzesCount }}</p>
                 </div>
                 <div class="bg-blue-100 rounded-full p-3">
                     <i class="fas fa-check-circle text-2xl text-blue-600"></i>
