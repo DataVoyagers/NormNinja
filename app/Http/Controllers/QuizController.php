@@ -207,14 +207,14 @@ class QuizController extends Controller
             ->map(function ($studentAttempts) {
                 return $studentAttempts->sortByDesc('percentage')->first();
             });
-        // 3. show all student
+        // 3. show all students including those who didn't attempt
         $results = $students->map(function ($student) use ($attempts) {
 
             if (isset($attempts[$student->id])) {
                 return $attempts[$student->id];
             }
 
-            // show not attempted record
+            // student did not attempt
             return (object) [
                 'student'       => $student,
                 'percentage'    => null,
@@ -223,12 +223,12 @@ class QuizController extends Controller
                 'status'        => 'Not Attempted',
             ];
         });
-        // 4. sorting attempted and not attempted
+        // 4. sort by percentage desc, nulls last
         $results = $results->sortByDesc(function ($item) {
             return $item->percentage ?? -1;
         })->values();
 
-        // 5. pagination
+        // 5. paginate manually
         $perPage = 20;
         $currentPage = request()->get('page', 1);
 
