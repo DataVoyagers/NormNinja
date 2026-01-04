@@ -40,6 +40,7 @@
             }
         @endphp
 
+        <!-- Course Progress -->
         <div class="bg-white rounded-lg shadow-md p-6 border-t-4 {{ $borderColor }}">
             <div class="flex items-center justify-between">
                 <div>
@@ -56,6 +57,7 @@
                     style="width: {{ $progress }}%"></div>
             </div>
         </div>
+
         <!-- Completed Quizzes -->
         <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-blue-500">
             <div class="flex items-center justify-between">
@@ -258,19 +260,27 @@
             <input type="hidden" id="eventId">
             
             <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Event Title</label>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Event Title <span class="text-red-500">*</span> </label>
                 <input type="text" 
                        id="eventTitle" 
                        class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" 
                        required>
+            
+                <!-- <p id="titleHint" class="text-xs mt-1 text-gray-500">
+                    • Must be at least 3 characters
+                </p>   -->
             </div>
             
             <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Event Date</label>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Event Date <span class="text-red-500">*</span> </label>
                 <input type="date" 
                        id="eventDate" 
                        class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" 
                        required>
+            
+                 <p id="dateHint" class="text-xs mt-1 text-gray-500">
+                    • Date cannot be in the past
+                </p>
             </div>
             
             <div class="mb-4">
@@ -346,7 +356,9 @@
                     <div class="border rounded-lg p-4 hover:bg-gray-50 transition duration-200">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
-                                <h3 class="font-semibold text-gray-800">{{ $attempt->quiz->title ?? 'Quiz Deleted' }}</h3>
+                                <h3 class="font-semibold text-gray-800">
+                                   {{ optional($attempt->quiz)->title ?? 'This quiz is no longer available' }} </h3>
+
                                 <p class="text-sm text-gray-500 mt-1">{{ $attempt->completed_at ? $attempt->completed_at->format('M d, Y') : '' }}</p>
                             </div>
                             <div class="text-right">
@@ -471,6 +483,20 @@ document.addEventListener('DOMContentLoaded', function() {
     renderCalendar();
 });
 
+function isDateValid() {
+    const dateInput = document.getElementById('eventDate');
+    const dateValue = dateInput.value;
+
+    if (!dateValue) return false;
+
+    const selectedDate = new Date(dateValue);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return selectedDate >= today;
+}
+
+
 // ===== CALENDAR EVENTS CRUD =====
 
 async function loadEvents() {
@@ -495,8 +521,14 @@ async function loadEvents() {
 
 async function saveEvent(e) {
     e.preventDefault();
-    
+    console.log("saveEvent triggered");
+    if (!isDateValid()) {
+    showNotification('Event date is invalid. Please select a valid date.', 'error');
+    return; 
+    }
+
     const eventId = document.getElementById('eventId').value;
+    
     const data = {
         title: document.getElementById('eventTitle').value,
         date: document.getElementById('eventDate').value,
