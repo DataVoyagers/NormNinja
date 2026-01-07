@@ -1,0 +1,47 @@
+services:
+  - type: web
+    name: normninja
+    env: php
+    plan: free  # Change to 'starter' for $7/month (no spin-down)
+    buildCommand: bash build.sh
+    startCommand: |
+      php artisan storage:link
+      php artisan serve --host=0.0.0.0 --port=$PORT
+    healthCheckPath: /
+    envVars:
+      - key: APP_NAME
+        value: NormNinja
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        sync: false
+      - key: LOG_CHANNEL
+        value: errorlog
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DATABASE_URL
+        fromDatabase:
+          name: normninja-db
+          property: connectionString
+      - key: SESSION_DRIVER
+        value: database
+      - key: SESSION_LIFETIME
+        value: 120
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: FILESYSTEM_DISK
+        value: local
+      - key: MAIL_MAILER
+        value: log
+      - key: CACHE_DRIVER
+        value: file
+
+databases:
+  - name: normninja-db
+    databaseName: normninja
+    user: normninja
+    plan: free  # Free for 90 days, then $7/month

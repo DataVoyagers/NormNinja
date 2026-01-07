@@ -58,13 +58,8 @@ class TeacherController extends Controller
                 ->where('is_completed', true)
                 ->get();
 
-            // Keep only the best attempt per quiz
-            $bestQuizAttempts = $quizAttempts->groupBy('quiz_id')->map(fn($attempts) =>
-                $attempts->sortByDesc(fn($a) => $a->score)->first()
-            )->values();
-
-            $completedQuizzes = $bestQuizAttempts->count();
-            $totalQuizzes = $teacher->quizzes()->count();
+            $completedQuizzes = $quizAttempts->count();
+            $totalQuizzes = $teacher->quizzes()->where('is_published', true)->count();
 
             // Average quiz score
             $avgQuizScore = 0;
