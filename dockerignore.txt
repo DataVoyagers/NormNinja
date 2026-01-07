@@ -1,0 +1,60 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Node modules (will be installed during build)
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Vendor directory (will be installed during build)
+vendor
+
+# Environment files
+.env
+.env.backup
+.env.production
+
+# Testing
+.phpunit.result.cache
+phpunit.xml
+
+# Build artifacts
+public/hot
+public/storage
+public/build
+
+# Storage (will be created at runtime)
+storage/*.key
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+storage/logs/*
+
+# Documentation (optional, keep if you want docs in image)
+*.md
+!README.md
+
+# Development tools
+.editorconfig
+.php_cs
+.php_cs.cache
+.phpstorm.meta.php
+_ide_helper.php
+
+# Deployment scripts (not needed in Docker)
+build.sh
+start.sh
+render.yaml
+.renderignore
+Procfile
