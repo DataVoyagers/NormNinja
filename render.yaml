@@ -1,47 +1,79 @@
 services:
+  # Web Service
   - type: web
     name: normninja
-    env: php
-    plan: free  # Change to 'starter' for $7/month (no spin-down)
-    buildCommand: bash build.sh
-    startCommand: |
-      php artisan storage:link
-      php artisan serve --host=0.0.0.0 --port=$PORT
-    healthCheckPath: /
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: APP_NAME
         value: NormNinja
       - key: APP_ENV
         value: production
-      - key: APP_DEBUG
-        value: false
       - key: APP_KEY
         generateValue: true
+      - key: APP_DEBUG
+        value: false
       - key: APP_URL
         sync: false
       - key: LOG_CHANNEL
-        value: errorlog
+        value: stack
+      - key: LOG_LEVEL
+        value: info
       - key: DB_CONNECTION
         value: pgsql
-      - key: DATABASE_URL
+      - key: DB_HOST
         fromDatabase:
           name: normninja-db
-          property: connectionString
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: normninja-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: normninja-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: normninja-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: normninja-db
+          property: password
       - key: SESSION_DRIVER
-        value: database
-      - key: SESSION_LIFETIME
-        value: 120
-      - key: QUEUE_CONNECTION
-        value: database
-      - key: FILESYSTEM_DISK
-        value: local
-      - key: MAIL_MAILER
-        value: log
+        value: file
       - key: CACHE_DRIVER
         value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: FILESYSTEM_DISK
+        value: local
+      - key: BROADCAST_DRIVER
+        value: log
+      - key: SESSION_LIFETIME
+        value: 120
+      - key: MAIL_MAILER
+        value: smtp
+      - key: MAIL_HOST
+        sync: false
+      - key: MAIL_PORT
+        value: 587
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_ENCRYPTION
+        value: tls
+      - key: MAIL_FROM_ADDRESS
+        value: hello@normninja.com
+      - key: MAIL_FROM_NAME
+        value: NormNinja
 
 databases:
+  # PostgreSQL Database (Free tier on Render)
   - name: normninja-db
     databaseName: normninja
     user: normninja
-    plan: free  # Free for 90 days, then $7/month
