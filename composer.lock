@@ -6722,7 +6722,7 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Laravel\\Pail\\PailServiceProvider"
+                        
                     ]
                 },
                 "branch-alias": {
