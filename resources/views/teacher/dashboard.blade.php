@@ -78,6 +78,49 @@
         </div>
     </div>
 
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Create Quiz -->
+        <a href="{{ route('quizzes.create') }}" class="bg-green-500 hover:bg-green-600 rounded-lg shadow-md p-6 text-white transition transform hover:scale-105">
+            <div class="flex items-center justify-between">
+                <div>
+                    <i class="fas fa-plus-circle text-4xl mb-2"></i>
+                    <p class="text-lg font-bold">Create Quiz</p>
+                </div>
+            </div>
+        </a>
+
+        <!-- Create Game -->
+        <a href="{{ route('games.create') }}" class="bg-purple-500 hover:bg-purple-600 rounded-lg shadow-md p-6 text-white transition transform hover:scale-105">
+            <div class="flex items-center justify-between">
+                <div>
+                    <i class="fas fa-gamepad text-4xl mb-2"></i>
+                    <p class="text-lg font-bold">Create Game</p>
+                </div>
+            </div>
+        </a>
+
+        <!-- Upload Material -->
+        <a href="{{ route('learning-materials.create') }}" class="bg-orange-500 hover:bg-orange-600 rounded-lg shadow-md p-6 text-white transition transform hover:scale-105">
+            <div class="flex items-center justify-between">
+                <div>
+                    <i class="fas fa-upload text-4xl mb-2"></i>
+                    <p class="text-lg font-bold">Upload Material</p>
+                </div>
+            </div>
+        </a>
+
+        <!-- View Performance -->
+        <a href="{{ route('teacher.student-performance') }}" class="bg-blue-500 hover:bg-blue-600 rounded-lg shadow-md p-6 text-white transition transform hover:scale-105">
+            <div class="flex items-center justify-between">
+                <div>
+                    <i class="fas fa-chart-bar text-4xl mb-2"></i>
+                    <p class="text-lg font-bold">Student Performance</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
     <!-- Calendar Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Calendar (2/3 width) -->
@@ -212,49 +255,6 @@
             @endif
         </div>
     </div>
-
-    <!-- Quick Actions -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Create Quiz -->
-        <a href="{{ route('quizzes.create') }}" class="bg-green-500 hover:bg-green-600 rounded-lg shadow-md p-6 text-white transition transform hover:scale-105">
-            <div class="flex items-center justify-between">
-                <div>
-                    <i class="fas fa-plus-circle text-4xl mb-2"></i>
-                    <p class="text-lg font-bold">Create Quiz</p>
-                </div>
-            </div>
-        </a>
-
-        <!-- Create Game -->
-        <a href="{{ route('games.create') }}" class="bg-purple-500 hover:bg-purple-600 rounded-lg shadow-md p-6 text-white transition transform hover:scale-105">
-            <div class="flex items-center justify-between">
-                <div>
-                    <i class="fas fa-gamepad text-4xl mb-2"></i>
-                    <p class="text-lg font-bold">Create Game</p>
-                </div>
-            </div>
-        </a>
-
-        <!-- Upload Material -->
-        <a href="{{ route('learning-materials.create') }}" class="bg-orange-500 hover:bg-orange-600 rounded-lg shadow-md p-6 text-white transition transform hover:scale-105">
-            <div class="flex items-center justify-between">
-                <div>
-                    <i class="fas fa-upload text-4xl mb-2"></i>
-                    <p class="text-lg font-bold">Upload Material</p>
-                </div>
-            </div>
-        </a>
-
-        <!-- View Performance -->
-        <a href="{{ route('teacher.student-performance') }}" class="bg-blue-500 hover:bg-blue-600 rounded-lg shadow-md p-6 text-white transition transform hover:scale-105">
-            <div class="flex items-center justify-between">
-                <div>
-                    <i class="fas fa-chart-bar text-4xl mb-2"></i>
-                    <p class="text-lg font-bold">Student Performance</p>
-                </div>
-            </div>
-        </a>
-    </div>
 </div>
 
 <!-- Add/Edit Event Modal -->
@@ -265,7 +265,7 @@
             <input type="hidden" id="eventId">
             
             <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Event Title</label>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Event Title <span class="text-red-500">*</span> </label>
                 <input type="text" 
                        id="eventTitle" 
                        class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500" 
@@ -273,7 +273,7 @@
             </div>
             
             <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Event Date</label>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Event Date <span class="text-red-500">*</span> </label>
                 <input type="date" 
                        id="eventDate" 
                        class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500" 

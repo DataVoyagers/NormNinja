@@ -79,8 +79,8 @@ class StudentController extends Controller
 
         // Get recent quiz attempts with sorting
         $quizQuery = $student->quizAttempts()
-            ->with('quiz')
             ->whereHas('quiz')
+            ->with('quiz')
             ->where('is_completed', true);
 
         // Apply quiz sorting
@@ -109,6 +109,10 @@ class StudentController extends Controller
                 $quizQuery->orderBy('completed_at', 'desc');
                 break;
         }
+
+         // All quiz attempts by the student
+        $allQuizAttempts = $student->quizAttempts;
+        $completedQuizzesCount = $allQuizAttempts->where('passed', true)->count();
 
         $recentQuizAttempts = $quizQuery->take(5)->get();
 
@@ -165,9 +169,11 @@ class StudentController extends Controller
 
         // Statistics
         $stats = [
-            'completed_quizzes' => $student->quizAttempts()->where('is_completed', true)->count(),
-            'average_quiz_score' => $averageScore,
-            'games_played' => $student->gameAttempts()->count(),
+            'completed_quizzes' => $completedQuizzesCount,
+            'course_progress' => $this->calculateCourseProgress($student),
+            'games_played' => $uniqueGamesPlayed = $student->gameAttempts()
+                ->distinct('game_id')
+                ->count(),
             'materials_available' => LearningMaterial::where('is_published', true)->count(),
             'active_forums' => Forum::where('is_active', true)->count(),
             'calendarEvents' => CalendarEvent::where('user_id', $student->id)->get(),
@@ -182,6 +188,7 @@ class StudentController extends Controller
         return view('student.dashboard', compact(
             'stats',
             'recentQuizAttempts',
+            'completedQuizzesCount',
             'recentGameAttempts',
             'availableMaterials',
             'availableQuizzes',
@@ -237,5 +244,26 @@ class StudentController extends Controller
         }
 
         return redirect()->route('student.profile')->with('success', 'Profile updated successfully.');
+    }
+
+    // Add this method to calculate progress:
+    private function calculateCourseProgress($student)
+    {
+        // Example calculation - adjust based on your requirements
+        $totalItems = 0;
+        $completedItems = 0;
+    
+        // Count quizzes
+        $totalQuizzes = Quiz::count();
+        $completedQuizzes = $student->quizAttempts()->distinct('quiz_id')->count();
+    
+        // Count games
+        $totalGames = Game::count();
+        $playedGames = $student->gameAttempts()->distinct('game_id')->count();
+    
+        $totalItems = $totalQuizzes + $totalGames;
+        $completedItems = $completedQuizzes + $playedGames;
+    
+        return $totalItems > 0 ? round(($completedItems / $totalItems) * 100) : 0;
     }
 }

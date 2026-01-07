@@ -108,6 +108,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('learning-materials', LearningMaterialController::class);
 
     // Quizzes
+    Route::middleware(['auth', 'role:teacher'])->group(function () {
+        Route::resource('quizzes', QuizController::class)->except(['show', 'index']);
+        Route::get('/quizzes/{quiz}/statistics', [QuizController::class, 'statistics'])->name('quizzes.statistics');
+});
+
     Route::resource('quizzes', QuizController::class);
     Route::get('quizzes/{quiz}/start', [QuizController::class, 'start'])->name('quizzes.start');
     Route::get('quizzes/{quiz}/take/{attempt}', [QuizController::class, 'take'])->name('quizzes.take');

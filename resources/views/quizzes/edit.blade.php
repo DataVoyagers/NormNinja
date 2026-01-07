@@ -149,7 +149,7 @@
                            {{ old('is_published', $quiz->is_published) ? 'checked' : '' }}
                            class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500">
                     <span class="ml-2 text-gray-700 font-semibold">
-                        Published (students can take the quiz)
+                        Active (students can take the quiz)
                     </span>
                 </label>
             </div>

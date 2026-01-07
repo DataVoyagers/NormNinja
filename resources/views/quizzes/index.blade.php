@@ -113,12 +113,16 @@
                     @if(auth()->user()->isTeacher())
                         <a href="{{ route('quizzes.questions.index', $quiz) }}" 
                            class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm font-semibold transition duration-200">
-                            <i class="fas fa-list mr-1"></i>Questions
+                            <i class="fas fa-list mr-1"></i>Qns
+                        </a>
+                        <a href="{{ route('quizzes.statistics', $quiz) }}" class="flex-1 text-center bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-semibold transition duration-200">            
+                            <i class="fas fa-chart-bar mr-1"></i>Res
                         </a>
                         <a href="{{ route('quizzes.edit', $quiz) }}" 
                            class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded text-sm font-semibold transition duration-200">
                             <i class="fas fa-edit"></i>
                         </a>
+                        
                         <form action="{{ route('quizzes.destroy', $quiz) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this quiz?');">
                             @csrf
                             @method('DELETE')

@@ -44,9 +44,10 @@
                 <!-- Description -->
                 <div class="mb-4">
                     <label for="description" class="block text-gray-700 font-semibold mb-2">
-                        Description
+                        Description <span class="text-red-500">*</span>
                     </label>
-                    <textarea name="description" 
+                    <textarea required
+                              name="description" 
                               id="description" 
                               rows="3"
                               class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('description') border-red-500 @enderror">{{ old('description', $game->description) }}</textarea>
@@ -58,14 +59,15 @@
                 <!-- Subject -->
                 <div class="mb-4">
                     <label for="subject" class="block text-gray-700 font-semibold mb-2">
-                        Subject
+                        Subject <span class="text-red-500">*</span>
                     </label>
                     <input type="text" 
                            name="subject" 
                            id="subject" 
                            value="{{ old('subject', $game->subject) }}"
                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                           placeholder="e.g., Mathematics, Science, History">
+                           placeholder="e.g., Mathematics, Science, History"
+                           required>
                     @error('subject')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
