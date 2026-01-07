@@ -21,14 +21,10 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 # 6. Copy project files
 COPY . .
 
-# Run artisan commands AFTER copying all files
-RUN php artisan package:discover --ansi
-RUN php artisan config:cache
-RUN php artisan route:cache
-
 # 7. Expose port (Render will set $PORT)
 EXPOSE 10000
 
 # 8. Start Laravel (use Render’s $PORT env variable)
 CMD php artisan serve --host=0.0.0.0 --port=$PORT
+
 
