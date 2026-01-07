@@ -16,7 +16,7 @@ WORKDIR /var/www
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY composer.json composer.lock ./
 
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+RUN composer install --no-dev --optimize-autoloader
 
 # 6. Copy project files
 COPY . .
@@ -26,5 +26,3 @@ EXPOSE 10000
 
 # 8. Start Laravel (use Render’s $PORT env variable)
 CMD php artisan serve --host=0.0.0.0 --port=$PORT
-
-
