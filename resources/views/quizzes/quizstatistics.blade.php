@@ -66,29 +66,37 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $attempt->created_at->format('M d, Y') }}</div>
-                            <div class="text-xs text-gray-500">{{ $attempt->created_at->format('h:i A') }}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            @if($attempt->is_completed)
-                            <div class="text-lg font-bold text-gray-900">{{ $attempt->percentage }}</div>
+                            @if($attempt->completed_at)
+                                <div class="text-sm text-gray-900">{{ $attempt->completed_at->format('M d, Y') }}</div>
+                                <div class="text-xs text-gray-500">{{ $attempt->completed_at->format('h:i A') }}</div>
                             @else
-                            <span class="text-sm text-gray-500">-</span>
+                                <span class="text-sm text-gray-400">Not Attempted</span>
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            @if($attempt->is_completed)
+                            @if($attempt->percentage !== null)
+                                <span class="text-lg font-bold text-gray-900">{{ $attempt->percentage }}</span>
+                            @else
+                                <span class="text-sm text-gray-500">---</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if(!$attempt)
+                            <span class="px-3 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-700">
+                            <i class="fas fa-minus-circle mr-1"></i> Not Attempted
+                            </span>
+                            @elseif($attempt->percentage !== null)
                             <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                 <i class="fas fa-check mr-1"></i> Completed
                             </span>
                             @else
                             <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                <i class="fas fa-clock mr-1"></i> In Progress
+                                <i class="fas fa-xmark mr-1"></i> Incomplete
                             </span>
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            @if($attempt->is_completed)
+                            @if($attempt->percentage !== null)
                                 @if($attempt->passed)
                                 <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                     <i class="fas fa-star mr-1"></i> PASSED
@@ -99,7 +107,7 @@
                                 </span>
                                 @endif
                             @else
-                            <span class="text-sm text-gray-500">-</span>
+                            <span class="text-gray-500 text-center">---</span>
                             @endif
                         </td>
                     </tr>
@@ -137,8 +145,10 @@ function exportData() {
         if (cells.length > 0) {
             const name = cells[0].querySelector('.text-sm.font-medium').textContent;
             const email = cells[0].querySelector('.text-xs.text-gray-500').textContent;
-            const date = cells[1].querySelector('.text-sm').textContent;
-            const time = cells[1].querySelector('.text-xs').textContent;
+            const dateCell = cells[1].querySelector('.text-sm');
+            const timeCell = cells[1].querySelector('.text-xs');
+            const date = dateCell ? dateCell.textContent.trim() : '---';
+            const time = timeCell ? timeCell.textContent.trim() : '---';
             const score = cells[2].textContent.trim();
             const status = cells[3].textContent.trim();
             const performance = cells[4].textContent.trim();

@@ -333,7 +333,7 @@
         <!-- Sidebar -->
         <div class="lg:col-span-1">
             <!-- Forum Info -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6 sticky top-4">
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6 top-4">
                 <h3 class="text-lg font-bold text-gray-800 mb-4">
                     <i class="fas fa-info-circle mr-2 text-pink-600"></i>Forum Info
                 </h3>
@@ -457,5 +457,4 @@ function toggleEditReply(replyId) {
     }
 }
 </script>
-
 @endsection

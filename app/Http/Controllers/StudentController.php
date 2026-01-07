@@ -79,6 +79,7 @@ class StudentController extends Controller
 
         // Get recent quiz attempts with sorting
         $quizQuery = $student->quizAttempts()
+            ->whereHas('quiz')
             ->with('quiz')
             ->where('is_completed', true);
 
@@ -108,6 +109,10 @@ class StudentController extends Controller
                 $quizQuery->orderBy('completed_at', 'desc');
                 break;
         }
+
+         // All quiz attempts by the student
+        $allQuizAttempts = $student->quizAttempts;
+        $completedQuizzesCount = $allQuizAttempts->where('passed', true)->count();
 
         $recentQuizAttempts = $quizQuery->take(5)->get();
 
@@ -164,9 +169,11 @@ class StudentController extends Controller
 
         // Statistics
         $stats = [
-            'completed_quizzes' => $student->quizAttempts()->where('is_completed', true)->count(),
+            'completed_quizzes' => $completedQuizzesCount,
             'course_progress' => $this->calculateCourseProgress($student),
-            'games_played' => $student->gameAttempts()->count(),
+            'games_played' => $uniqueGamesPlayed = $student->gameAttempts()
+                ->distinct('game_id')
+                ->count(),
             'materials_available' => LearningMaterial::where('is_published', true)->count(),
             'active_forums' => Forum::where('is_active', true)->count(),
             'calendarEvents' => CalendarEvent::where('user_id', $student->id)->get(),
@@ -181,6 +188,7 @@ class StudentController extends Controller
         return view('student.dashboard', compact(
             'stats',
             'recentQuizAttempts',
+            'completedQuizzesCount',
             'recentGameAttempts',
             'availableMaterials',
             'availableQuizzes',
