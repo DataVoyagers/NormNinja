@@ -2,7 +2,7 @@ services:
   - type: web
     name: normninja
     env: php
-    plan: free  # Change to 'starter' for $7/month (no spin-down)
+    plan: free
     buildCommand: bash build.sh
     startCommand: |
       php artisan storage:link
@@ -45,3 +45,4 @@ databases:
     databaseName: normninja
     user: normninja
     plan: free  # Free for 90 days, then $7/month
+
