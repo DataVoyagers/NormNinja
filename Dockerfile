@@ -1,28 +1,37 @@
-# 1. Base image with PHP
-FROM php:8.2-cli
+# 1. Base image
+FROM php:8.2-apache
 
-# 2. Install system dependencies
+# 2. Install system deps
 RUN apt-get update && apt-get install -y \
-    git unzip curl libpng-dev libonig-dev libxml2-dev \
-    && rm -rf /var/lib/apt/lists/*
+    git unzip libpng-dev libonig-dev libxml2-dev \
+    nodejs npm \
+    && docker-php-ext-install pdo pdo_mysql mbstring bcmath gd
 
-# 3. Install PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql mbstring bcmath gd
+# 3. Enable mod_rewrite for Laravel
+RUN a2enmod rewrite
 
 # 4. Set working directory
-WORKDIR /var/www
+WORKDIR /var/www/html/
 
-# 5. Copy composer first (for caching)
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-COPY composer.json composer.lock ./
-
-RUN composer install --no-dev --optimize-autoloader
-
-# 6. Copy project files
+# 5. Copy project files
 COPY . .
 
-# 7. Expose port (Render will set $PORT)
-EXPOSE 10000
+# 6. Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+RUN composer install --no-dev --optimize-autoloader
 
-# 8. Start Laravel (use Render’s $PORT env variable)
-CMD php artisan serve --host=0.0.0.0 --port=$PORT
+# 7. Build frontend if exists
+RUN npm install && npm run build || echo "No frontend build"
+
+# 8. Set permissions
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
+# 9. Fix Apache root to Laravel public
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+
+# 10. Expose port 80 (Render uses $PORT automatically)
+EXPOSE 80
+
+# 11. Start Apache
+CMD ["apache2-foreground"]
