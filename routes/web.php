@@ -112,8 +112,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('quizzes', QuizController::class)->except(['show', 'index']);
         Route::get('/quizzes/{quiz}/statistics', [QuizController::class, 'statistics'])->name('quizzes.statistics');
 });
-
-    Route::resource('quizzes', QuizController::class);
+    
     Route::get('quizzes/{quiz}/start', [QuizController::class, 'start'])->name('quizzes.start');
     Route::get('quizzes/{quiz}/take/{attempt}', [QuizController::class, 'take'])->name('quizzes.take');
     Route::post('quizzes/{quiz}/submit/{attempt}', [QuizController::class, 'submit'])->name('quizzes.submit');
@@ -145,7 +144,6 @@ Route::middleware('auth')->group(function () {
 });
 
     // Games
-    Route::resource('games', GameController::class);
     Route::get('games/{game}/play', [GameController::class, 'play'])->name('games.play');
     Route::post('games/{game}/save-attempt', [GameController::class, 'saveAttempt'])->name('games.save-attempt');
 
@@ -158,7 +156,6 @@ Route::middleware('auth')->group(function () {
     Route::put('forums/{forum}', [ForumController::class, 'update'])->name('forums.update');
     Route::delete('forums/{forum}', [ForumController::class, 'destroy'])->name('forums.destroy');
 
-    Route::resource('forums', ForumController::class);
     Route::post('forums/{forum}/posts', [ForumController::class, 'storePost'])->name('forums.posts.store');
     Route::put('forums/{forum}/posts/{post}', [ForumController::class, 'updatePost'])->name('forums.posts.update'); // ADD THIS LINE
     Route::delete('forums/{forum}/posts/{post}', [ForumController::class, 'deletePost'])->name('forums.posts.destroy');
