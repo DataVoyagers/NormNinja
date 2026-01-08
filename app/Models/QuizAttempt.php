@@ -45,7 +45,7 @@ class QuizAttempt extends Model
     // This calculates percentage dynamically
     public function getPercentageAttribute()
     {
-        if ($this->total_points == 0) return 0;
+        if ($this->total_points == 0) {return null;}
         return round(($this->score / $this->total_points) * 100, 2);
     }
 

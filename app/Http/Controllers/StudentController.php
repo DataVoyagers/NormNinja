@@ -7,7 +7,6 @@ use App\Models\Quiz;
 use App\Models\Game;
 use App\Models\Forum;
 use App\Models\CalendarEvent;
-use App\Models\Reminder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -44,28 +43,6 @@ class StudentController extends Controller
     public function calendarDelete(CalendarEvent $event)
     {
         $event->delete();
-        return back();
-    }
-
-    public function reminderStore(Request $request)
-    {
-        Reminder::create([
-            'user_id' => auth()->id(),
-            'text' => $request->text,
-            'date' => $request->date,
-        ]);
-        return back();
-    }
-
-    public function reminderUpdate(Request $request, Reminder $reminder)
-    {
-        $reminder->update($request->only(['text', 'date']));
-        return back();
-    }
-
-    public function reminderDelete(Reminder $reminder)
-    {
-        $reminder->delete();
         return back();
     }
 
