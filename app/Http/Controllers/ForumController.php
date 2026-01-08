@@ -109,6 +109,31 @@ class ForumController extends Controller
         return redirect()->route('forums.show', $forum)->with('success', 'Post created successfully.');
     }
 
+    // ADD THIS NEW METHOD
+    public function updatePost(Request $request, Forum $forum, ForumPost $post)
+    {
+        // Check authorization - only post owner or teacher can edit
+        if ($post->user_id !== auth()->id() && !auth()->user()->isTeacher()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Check if post belongs to this forum
+        if ($post->forum_id !== $forum->id) {
+            abort(404);
+        }
+
+        $request->validate([
+            'content' => 'required|string|max:5000',
+        ]);
+
+        $post->update([
+            'content' => $request->content,
+        ]);
+
+        return redirect()->route('forums.show', $forum)
+                        ->with('success', 'Post updated successfully!');
+    }
+
     public function deletePost(Forum $forum, ForumPost $post)
     {
         if ($post->user_id !== auth()->id() && !auth()->user()->isTeacher()) {
