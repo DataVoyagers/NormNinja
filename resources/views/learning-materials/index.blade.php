@@ -9,7 +9,6 @@
     <div class="flex justify-between items-center mb-8">
         <div>
             <h1 class="text-3xl font-bold text-gray-800">Learning Materials</h1>
-            
         </div>
         @if(auth()->user()->isTeacher())
         <a href="{{ route('learning-materials.create') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition duration-200">
@@ -109,12 +108,6 @@
                         <p class="text-gray-500 text-xs">Uploaded By</p>
                         <p class="font-semibold text-gray-800 truncate">{{ $material->teacher->name }}</p>
                     </div>
-                    @if($material->grade_level)
-                    <div class="bg-gray-50 rounded p-2">
-                        <p class="text-gray-500 text-xs">Grade Level</p>
-                        <p class="font-semibold text-gray-800">Grade {{ $material->grade_level }}</p>
-                    </div>
-                    @endif
                 </div>
 
                 <!-- Upload Date -->

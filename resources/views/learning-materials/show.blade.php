@@ -97,6 +97,12 @@
                             <p class="text-sm text-gray-500 mb-1">Upload Date</p>
                             <p class="font-semibold text-gray-800">{{ $learningMaterial->created_at->format('M d, Y') }}</p>
                         </div>
+                        @if($learningMaterial->grade_level)
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <p class="text-sm text-gray-500 mb-1">Grade Level</p>
+                            <p class="font-semibold text-gray-800">Grade {{ $learningMaterial->grade_level }}</p>
+                        </div>
+                        @endif
                         <div class="bg-gray-50 rounded-lg p-4">
                             <p class="text-sm text-gray-500 mb-1">File Type</p>
                             <p class="font-semibold text-gray-800">{{ strtoupper($learningMaterial->file_type) }}</p>
@@ -210,32 +216,31 @@
             </div>
 
             <!-- Tips -->
-             @if(auth()->user()->isStudent())
-                <div class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6">
-                    <h3 class="text-lg font-bold text-gray-800 mb-3">
-                        <i class="fas fa-lightbulb mr-2 text-yellow-500"></i>Study Tips
-                    </h3>
-                    <ul class="space-y-2 text-sm text-gray-700">
-                        <li class="flex items-start">
-                            <i class="fas fa-check text-purple-600 mr-2 mt-1"></i>
-                            <span>Download for offline access</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-check text-purple-600 mr-2 mt-1"></i>
-                            <span>Take notes while studying</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-check text-purple-600 mr-2 mt-1"></i>
-                            <span>Review regularly for retention</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-check text-purple-600 mr-2 mt-1"></i>
-                            <span>Ask questions if unclear</span>
-                        </li>
-                    </ul>
-                </div>
-            @endif
+            @if(auth()->user()->isStudent())
+            <div class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-3">
+                    <i class="fas fa-lightbulb mr-2 text-yellow-500"></i>Study Tips
+                </h3>
+                <ul class="space-y-2 text-sm text-gray-700">
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-purple-600 mr-2 mt-1"></i>
+                        <span>Download for offline access</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-purple-600 mr-2 mt-1"></i>
+                        <span>Take notes while studying</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-purple-600 mr-2 mt-1"></i>
+                        <span>Review regularly for retention</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-purple-600 mr-2 mt-1"></i>
+                        <span>Ask questions if unclear</span>
+                    </li>
+                </ul>
             </div>
+            @endif
         </div>
     </div>
 </div>

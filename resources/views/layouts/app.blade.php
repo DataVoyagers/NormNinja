@@ -14,15 +14,14 @@
     
     @stack('styles')
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 flex-col min-h-screen relative">
     <!-- Navigation -->
-    <nav class="bg-indigo-600 text-white shadow-lg">
+    <nav class="bg-white-600 text-indigo shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <a href="/" class="flex items-center">
                         <img src="/images/logo.png" alt="NormNinja Logo" class="h-10 w-auto mr-3" onerror="this.style.display='none'">
-                        <span class="text-2xl font-bold">NormNinja</span>
                     </a>
                 </div>
 
@@ -30,60 +29,60 @@
                 <div class="flex items-center space-x-4">
                     <!-- Navigation Links based on role -->
                     @if(auth()->user()->isAdmin())
-                        <a href="{{ route('admin.dashboard') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        <a href="{{ route('admin.dashboard') }}" class="hover:text-indigo-700 px-3 py-2 rounded-md">
                             <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
                         </a>
-                        <a href="{{ route('admin.students.index') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        <a href="{{ route('admin.students.index') }}" class="hover:text-indigo-700 px-3 py-2 rounded-md">
                             <i class="fas fa-user-graduate mr-2"></i>Students
                         </a>
-                        <a href="{{ route('admin.teachers.index') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        <a href="{{ route('admin.teachers.index') }}" class="hover:text-indigo-700 px-3 py-2 rounded-md">
                             <i class="fas fa-chalkboard-teacher mr-2"></i>Teachers
                         </a>
                     @elseif(auth()->user()->isTeacher())
-                        <a href="{{ route('teacher.dashboard') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        <a href="{{ route('teacher.dashboard') }}" class="hover:text-teal-700 px-3 py-2 rounded-md">
                             <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
                         </a>
-                        <a href="{{ route('learning-materials.index') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        <a href="{{ route('learning-materials.index') }}" class="hover:text-teal-700 px-3 py-2 rounded-md">
                             <i class="fas fa-book mr-2"></i>Materials
                         </a>
-                        <a href="{{ route('quizzes.index') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        <a href="{{ route('quizzes.index') }}" class="hover:text-teal-700 px-3 py-2 rounded-md">
                             <i class="fas fa-question-circle mr-2"></i>Quizzes
                         </a>
-                        <a href="{{ route('games.index') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        <a href="{{ route('games.index') }}" class="hover:text-teal-700 px-3 py-2 rounded-md">
                             <i class="fas fa-gamepad mr-2"></i>Games
                         </a>
-                        <a href="{{ route('forums.index') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        <a href="{{ route('forums.index') }}" class="hover:text-teal-700 px-3 py-2 rounded-md">
                             <i class="fas fa-comments mr-2"></i>Forums
                         </a>
-                        <a href="{{ route('teacher.student-performance') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        <a href="{{ route('teacher.student-performance') }}" class="hover:text-teal-700 px-3 py-2 rounded-md">
                             <i class="fas fa-chart-line mr-2"></i>Performance
                         </a>
                     @elseif(auth()->user()->isStudent())
-                        <a href="{{ route('student.dashboard') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        <a href="{{ route('student.dashboard') }}" class="hover:text-indigo-700 px-3 py-2 rounded-md">
                             <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
                         </a>
-                        <a href="{{ route('learning-materials.index') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        <a href="{{ route('learning-materials.index') }}" class="hover:text-indigo-700 px-3 py-2 rounded-md">
                             <i class="fas fa-book mr-2"></i>Materials
                         </a>
-                        <a href="{{ route('quizzes.index') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        <a href="{{ route('quizzes.index') }}" class="hover:text-indigo-700 px-3 py-2 rounded-md">
                             <i class="fas fa-question-circle mr-2"></i>Quizzes
                         </a>
-                        <a href="{{ route('games.index') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        <a href="{{ route('games.index') }}" class="hover:text-indigo-700 px-3 py-2 rounded-md">
                             <i class="fas fa-gamepad mr-2"></i>Games
                         </a>
-                        <a href="{{ route('games.leaderboard') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        <!-- <a href="{{ route('games.leaderboard') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
                             <i class="fas fa-trophy mr-2"></i>Leaderboard
-                        </a>
-                        <a href="{{ route('forums.index') }}" class="hover:bg-indigo-700 px-3 py-2 rounded-md">
+                        </a> -->
+                        <a href="{{ route('forums.index') }}" class="hover:text-indigo-700 px-3 py-2 rounded-md">
                             <i class="fas fa-comments mr-2"></i>Forums
                         </a>
                     @endif
 
                     <!-- User Menu -->
                     <div class="relative">
-                        <button id="userMenuButton" type="button" class="flex items-center space-x-2 hover:bg-indigo-700 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-white">
-                            <i class="fas fa-user-circle text-2xl"></i>
-                            <span>{{ auth()->user()->name }}</span>
+                        <button id="userMenuButton" type="button" class="flex items-center space-x-2 {{ auth()->user()->isTeacher() ? 'hover:text-teal-700' : (auth()->user()->isStudent() ? 'hover:text-indigo-700' : 'hover:text-teal-700') }} px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-white">
+                        <i class="fas fa-user-circle text-2xl"></i>    
+                        <span>{{ auth()->user()->name }}</span>
                             <i id="dropdownArrow" class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
                         </button>
                         <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
@@ -100,6 +99,10 @@
                                     <a href="{{ route('teacher.profile') }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150">
                                         <i class="fas fa-user mr-2"></i>My Profile
                                     </a>
+                                @elseif(auth()->user()->isAdmin())
+                                    <a href="{{ route('admin.profile') }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150">
+                                        <i class="fas fa-user-shield mr-2"></i>My Profile
+                                    </a>
                                 @endif
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
@@ -115,7 +118,6 @@
             </div>
         </div>
     </nav>
-
     <!-- Flash Messages -->
     @if(session('success'))
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
@@ -134,12 +136,12 @@
     @endif
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-4 pb-32 flex-grow">
         @yield('content')
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white mt-12">
+    <footer class="bg-gray-800 text-white absolute bottom-0 w-full">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="text-center">
                 <p>&copy; {{ date('Y') }} NormNinja - Data Voyagers Team. All rights reserved.</p>

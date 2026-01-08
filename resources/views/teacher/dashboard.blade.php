@@ -377,7 +377,6 @@ document.addEventListener('DOMContentLoaded', function() {
 async function loadEvents() {
     try {
         const response = await fetch(API.events.index, {
-            credentials: 'same-origin',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
                 'Accept': 'application/json'
@@ -424,7 +423,6 @@ async function saveEvent(e) {
         
         const response = await fetch(url, {
             method: method,
-            credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken,
@@ -454,7 +452,6 @@ async function deleteEvent(id) {
     try {
         const response = await fetch(API.events.destroy(id), {
             method: 'DELETE',
-            credentials: 'same-origin',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
                 'Accept': 'application/json'

@@ -8,13 +8,13 @@
     <div class="flex justify-between items-center mb-8">
         <div>
             <h1 class="text-3xl font-bold text-gray-800">Discussion Forums</h1>
-            <p class="text-gray-600 mt-2">
+            <!-- <p class="text-gray-600 mt-2">
                 @if(auth()->user()->isTeacher())
                     Create and manage discussion forums for your students
                 @else
                     Join discussions and collaborate with your classmates
                 @endif
-            </p>
+            </p> -->
         </div>
         @if(auth()->user()->isTeacher())
         <a href="{{ route('forums.create') }}" class="bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition duration-200">

@@ -8,13 +8,13 @@
     <div class="flex justify-between items-center mb-8">
         <div>
             <h1 class="text-3xl font-bold text-gray-800">Educational Games</h1>
-            <p class="text-gray-600 mt-2">
+            <!-- <p class="text-gray-600 mt-2">
                 @if(auth()->user()->isTeacher())
                     Manage and create interactive learning games
                 @else
                     Play games to learn and practice
                 @endif
-            </p>
+            </p> -->
         </div>
         <div class="flex gap-3">
             @if(auth()->user()->isStudent())
