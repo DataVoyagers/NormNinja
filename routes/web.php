@@ -144,7 +144,6 @@ Route::middleware('auth')->group(function () {
 });
 
     // Games
-    Route::get('games/{game}/play', [GameController::class, 'play'])->name('games.play');
     Route::post('games/{game}/save-attempt', [GameController::class, 'saveAttempt'])->name('games.save-attempt');
 
     // Forums
