@@ -23,7 +23,7 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts --no-autoloader
 
 # 7. Copy package files and build frontend
 COPY package*.json ./
-RUN npm ci --no-audit --no-fund && npm run build && rm -rf node_modules
+RUN npm install --no-audit --no-fund && npm run build && rm -rf node_modules
 
 # 8. Copy rest of project
 COPY . .
@@ -43,3 +43,4 @@ RUN apt-get purge -y nodejs npm && apt-get autoremove -y
 
 EXPOSE 80
 CMD ["apache2-foreground"]
+
