@@ -1,37 +1,48 @@
-# 1. Base image
+# Stage 1: Build frontend assets (Node environment)
+FROM node:20-alpine AS frontend
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY resources ./resources
+COPY vite.config.js ./
+COPY postcss.config.js ./
+COPY tailwind.config.js ./
+RUN npm run build
+
+# Stage 2: PHP application (no Node needed)
 FROM php:8.2-apache
 
-# 2. Install system deps
+# Install system deps (no nodejs/npm needed here!)
 RUN apt-get update && apt-get install -y \
     git unzip libpng-dev libonig-dev libxml2-dev \
-    nodejs npm \
-    && docker-php-ext-install pdo pdo_mysql mbstring bcmath gd
+    && docker-php-ext-install pdo pdo_mysql mbstring bcmath gd \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 3. Enable mod_rewrite for Laravel
+# Enable mod_rewrite
 RUN a2enmod rewrite
 
-# 4. Set working directory
-WORKDIR /var/www/html/
+WORKDIR /var/www/html
 
-# 5. Copy project files
+# Install Composer dependencies first (better caching)
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-autoloader
+
+# Copy application code
 COPY . .
 
-# 6. Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-RUN composer install --no-dev --optimize-autoloader
+# Finish composer setup
+RUN composer dump-autoload --optimize
 
-# 7. Build frontend if exists
-RUN npm install && npm run build || echo "No frontend build"
+# Copy built frontend assets from Stage 1
+COPY --from=frontend /app/public/build ./public/build
 
-# 8. Set permissions
+# Set permissions
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# 9. Fix Apache root to Laravel public
+# Fix Apache root
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
-# 10. Expose port 80 (Render uses $PORT automatically)
 EXPOSE 80
-
-# 11. Start Apache
 CMD ["apache2-foreground"]
