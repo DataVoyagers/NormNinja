@@ -1,37 +1,45 @@
 # 1. Base image
 FROM php:8.2-apache
 
-# 2. Install system deps
-RUN apt-get update && apt-get install -y \
+# 2. Install system deps + cleanup in same layer
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git unzip libpng-dev libonig-dev libxml2-dev \
     nodejs npm \
-    && docker-php-ext-install pdo pdo_mysql mbstring bcmath gd
+    && docker-php-ext-install pdo pdo_mysql mbstring bcmath gd \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 3. Enable mod_rewrite for Laravel
+# 3. Enable mod_rewrite
 RUN a2enmod rewrite
 
 # 4. Set working directory
 WORKDIR /var/www/html/
 
-# 5. Copy project files
+# 5. Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# 6. Copy composer files first (better caching)
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-autoloader
+
+# 7. Copy package files and build frontend
+COPY package*.json ./
+RUN npm ci --no-audit --no-fund && npm run build && rm -rf node_modules
+
+# 8. Copy rest of project
 COPY . .
 
-# 6. Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-RUN composer install --no-dev --optimize-autoloader
+# 9. Finish composer setup
+RUN composer dump-autoload --optimize
 
-# 7. Build frontend if exists
-RUN npm install && npm run build || echo "No frontend build"
-
-# 8. Set permissions
+# 10. Set permissions
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# 9. Fix Apache root to Laravel public
+# 11. Fix Apache root
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
-# 10. Expose port 80 (Render uses $PORT automatically)
-EXPOSE 80
+# 12. Remove Node after build (saves ~100MB+ in final image)
+RUN apt-get purge -y nodejs npm && apt-get autoremove -y
 
-# 11. Start Apache
+EXPOSE 80
 CMD ["apache2-foreground"]
