@@ -5,8 +5,6 @@ COPY package*.json ./
 RUN npm ci
 COPY resources ./resources
 COPY vite.config.js ./
-COPY postcss.config.js ./
-COPY tailwind.config.js ./
 RUN npm run build
 
 # Stage 2: PHP application (no Node needed)
@@ -46,3 +44,4 @@ RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available
 
 EXPOSE 80
 CMD ["apache2-foreground"]
+
